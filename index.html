@@ -19,14 +19,14 @@
     height:100vh;
     display:flex;
     flex-direction:column;
-    background:linear-gradient(180deg,#060606 0%, #111 100%);
+    background:linear-gradient(180deg,#0a2448 0%, #0d2f5f 35%, #102846 100%);
   }
   .header{
     display:flex;
     justify-content:space-between;
     align-items:center;
     padding:20px 24px 14px;
-    border-bottom:1px solid rgba(255,255,255,.10);
+    border-bottom:1px solid rgba(255,255,255,.12);
   }
   .header-left{
     display:flex;
@@ -34,33 +34,31 @@
     gap:16px;
   }
   .logo{
-    width:70px;
-    height:70px;
+    width:72px;
+    height:72px;
     object-fit:contain;
-    background:transparent;
-    border-radius:0;
-    padding:0;
     display:block;
   }
   .title{
-    font-size:30px;
-    font-weight:700;
-    line-height:1.1;
+    font-size:31px;
+    font-weight:800;
+    line-height:1.05;
+    letter-spacing:.2px;
   }
   .sub{
-    color:#aaa;
-    font-size:15px;
-    margin-top:4px;
+    color:#d7e2f0;
+    font-size:16px;
+    margin-top:5px;
   }
   .clock{
     text-align:right;
   }
   .clock-time{
-    font-size:22px;
-    font-weight:700;
+    font-size:23px;
+    font-weight:800;
   }
   .clock-sub{
-    color:#888;
+    color:#b6c4d7;
     font-size:13px;
     margin-top:4px;
   }
@@ -71,15 +69,15 @@
     flex-wrap:wrap;
   }
   .pill{
-    padding:8px 14px;
+    padding:9px 15px;
     border-radius:20px;
-    font-size:13px;
-    font-weight:700;
+    font-size:14px;
+    font-weight:800;
   }
   .eco{background:#f97316;color:#fff}
   .der{background:#7c3aed;color:#fff}
   .sal{background:#3b82f6;color:#fff}
-  .qui{background:#facc15;color:#000}
+  .qui{background:#facc15;color:#111}
   .content{
     flex:1;
     padding:18px 24px;
@@ -92,17 +90,22 @@
     align-items:start;
   }
   .card{
-    background:#f3f3f7;
+    background:#f6f7fb;
     color:#111;
     border-radius:22px;
-    padding:16px;
-    min-height:240px;
-    height:240px;
+    padding:18px;
+    min-height:252px;
+    height:252px;
     display:flex;
     flex-direction:column;
     justify-content:space-between;
-    box-shadow:0 12px 30px rgba(0,0,0,.25);
+    box-shadow:0 14px 34px rgba(0,0,0,.26);
     border:1px solid rgba(0,0,0,.04);
+    animation:fadeInUp .55s ease both;
+  }
+  @keyframes fadeInUp{
+    from{opacity:0;transform:translateY(14px) scale(.985);}
+    to{opacity:1;transform:translateY(0) scale(1);}
   }
   .top{
     display:flex;
@@ -111,87 +114,112 @@
     align-items:flex-start;
   }
   .fac{
-    padding:6px 10px;
+    padding:7px 12px;
     border-radius:20px;
-    font-size:12px;
+    font-size:14px;
     color:#fff;
-    font-weight:700;
+    font-weight:800;
     line-height:1.1;
-    max-width:140px;
+    max-width:160px;
     text-align:center;
   }
   .status{
     color:#fff;
-    padding:6px 10px;
+    padding:7px 12px;
     border-radius:20px;
-    font-size:12px;
-    font-weight:700;
+    font-size:14px;
+    font-weight:800;
     white-space:nowrap;
   }
   .status.live{background:#10b981}
   .status.soon{background:#9ca3af}
   .status.alert-badge{background:#b91c1c}
+  .status.change-badge{background:#d97706}
+
   .card.eco .fac{background:#f97316}
   .card.der .fac{background:#7c3aed}
   .card.sal .fac{background:#3b82f6}
-  .card.qui .fac{background:#facc15;color:#000}
+  .card.qui .fac{background:#facc15;color:#111}
+
   .card.eco h2{color:#f97316}
   .card.der h2{color:#7c3aed}
   .card.sal h2{color:#3b82f6}
-  .card.qui h2{color:#d4a200}
+  .card.qui h2{color:#b98900}
+
   .card.alert{
     background:#dc2626 !important;
     color:#fff !important;
-    border:1px solid rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.10);
   }
   .card.alert .fac{
     background:rgba(255,255,255,.18) !important;
     color:#fff !important;
   }
-  .card.alert h2{
+  .card.alert h2,
+  .card.alert .alert-message,
+  .card.alert .info{
     color:#fff !important;
   }
-  .card.alert .icon-wrap{
+  .card.alert .icon-wrap{color:#fff !important;}
+
+  .card.change{
+    background:#fff7ed !important;
+    color:#111 !important;
+    border:1px solid rgba(217,119,6,.18);
+  }
+  .card.change .fac{
+    background:#d97706 !important;
     color:#fff !important;
   }
+  .card.change h2{
+    color:#b45309 !important;
+  }
+  .card.change .alert-message{
+    color:#92400e !important;
+  }
+  .card.change .icon-wrap{
+    color:#b45309 !important;
+  }
+
   h2{
-    font-size:18px;
-    line-height:1.15;
-    margin:0;
+    font-size:24px;
+    line-height:1.12;
+    margin:8px 0 0 0;
     display:-webkit-box;
     -webkit-line-clamp:3;
     -webkit-box-orient:vertical;
     overflow:hidden;
+    font-weight:800;
   }
   .alert-message{
-    margin-top:8px;
-    font-size:13px;
-    font-weight:700;
+    margin-top:10px;
+    font-size:15px;
+    font-weight:800;
     line-height:1.25;
     opacity:.98;
   }
   .info{
-    font-size:14px;
+    font-size:17px;
     display:flex;
     flex-direction:column;
-    gap:9px;
+    gap:10px;
   }
   .info-line{
     display:flex;
     align-items:center;
-    gap:10px;
+    gap:11px;
   }
   .icon-wrap{
-    width:18px;
-    height:18px;
+    width:22px;
+    height:22px;
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    flex:0 0 18px;
+    flex:0 0 22px;
   }
   .icon-svg{
-    width:16px;
-    height:16px;
+    width:20px;
+    height:20px;
     stroke:currentColor;
     fill:none;
     stroke-width:1.9;
@@ -201,13 +229,14 @@
   .card.eco .icon-wrap{color:#f97316}
   .card.der .icon-wrap{color:#7c3aed}
   .card.sal .icon-wrap{color:#3b82f6}
-  .card.qui .icon-wrap{color:#d4a200}
+  .card.qui .icon-wrap{color:#b98900}
+
   .footer{
     display:flex;
     justify-content:space-between;
     padding:14px 24px;
-    color:#888;
-    border-top:1px solid rgba(255,255,255,.1);
+    color:#d7e2f0;
+    border-top:1px solid rgba(255,255,255,.12);
     font-size:15px;
   }
   .empty{
@@ -218,15 +247,15 @@
     justify-content:center;
   }
   .empty-box{
-    border:1px solid rgba(255,255,255,.12);
-    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.16);
+    background:rgba(255,255,255,.06);
     border-radius:28px;
     padding:42px;
     text-align:center;
     width:min(980px,100%);
   }
   .empty-box h2{font-size:36px;color:#fff}
-  .empty-box p{color:#bdbdbd;font-size:18px;margin-top:12px}
+  .empty-box p{color:#d4dbe5;font-size:18px;margin-top:12px}
 </style>
 </head>
 <body>
@@ -295,48 +324,29 @@ function parseCSV(text){
   let row = [];
   let cell = "";
   let inQuotes = false;
-
   for(let i = 0; i < text.length; i++){
     const char = text[i];
     const next = text[i + 1];
-
     if(char === '"'){
-      if(inQuotes && next === '"'){
-        cell += '"';
-        i++;
-      } else {
-        inQuotes = !inQuotes;
-      }
+      if(inQuotes && next === '"'){ cell += '"'; i++; }
+      else { inQuotes = !inQuotes; }
     } else if(char === ',' && !inQuotes){
-      row.push(cell);
-      cell = "";
+      row.push(cell); cell = "";
     } else if((char === '\n' || char === '\r') && !inQuotes){
       if(char === '\r' && next === '\n') i++;
       if(cell.length || row.length){
-        row.push(cell);
-        rows.push(row);
-        row = [];
-        cell = "";
+        row.push(cell); rows.push(row); row = []; cell = "";
       }
     } else {
       cell += char;
     }
   }
-
-  if(cell.length || row.length){
-    row.push(cell);
-    rows.push(row);
-  }
-
+  if(cell.length || row.length){ row.push(cell); rows.push(row); }
   return rows;
 }
 
 function normalizeText(value){
-  return (value || "")
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
+  return (value || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 function parseRange(range){
@@ -350,14 +360,8 @@ function getNowContext(){
   if(TEST_MODE){
     const hours = Math.floor(TEST_TIME/60).toString().padStart(2,'0');
     const mins = (TEST_TIME%60).toString().padStart(2,'0');
-    return {
-      day: TEST_DAY,
-      normalizedDay: normalizeText(TEST_DAY),
-      minutes: TEST_TIME,
-      label: `${TEST_DAY}, ${hours}:${mins}`
-    };
+    return { day: TEST_DAY, normalizedDay: normalizeText(TEST_DAY), minutes: TEST_TIME, label: `${TEST_DAY}, ${hours}:${mins}` };
   }
-
   const now = new Date();
   const day = now.toLocaleDateString('es-AR', { weekday:'long' }).toLowerCase();
   const minutes = now.getHours()*60 + now.getMinutes();
@@ -375,11 +379,9 @@ async function loadData(){
   const res = await fetch(SHEET_URL + (SHEET_URL.includes("?") ? "&" : "?") + "_t=" + Date.now(), { cache: "no-store" });
   const text = await res.text();
   const rows = parseCSV(text);
-
   if(rows.length <= 1) return [];
 
   const headers = rows[0].map(h => normalizeText(h));
-
   const idx = {
     id: headers.indexOf("id"),
     dia: headers.indexOf("dia"),
@@ -401,7 +403,6 @@ async function loadData(){
       const diaRaw = cols[idx.dia] || "";
       const facRaw = cols[idx.facultad] || "";
       const visibleRaw = (cols[idx.visible] || "").trim().toLowerCase();
-
       return {
         id: cols[idx.id] || "",
         dia: diaRaw.trim(),
@@ -447,23 +448,34 @@ function createCard(item){
   const groupIcon = `<span class="icon-wrap"><svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1"></path><circle cx="9.5" cy="8" r="3"></circle><path d="M20 21v-1a4 4 0 0 0-3-3.87"></path><path d="M14 5.13a3 3 0 0 1 0 5.74"></path></svg></span>`;
   const timeIcon = `<span class="icon-wrap"><svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>`;
   const visualClass = facultyClass[item.facultad] || '';
-  const isAlert = item.estado && item.estado !== 'normal';
+  const isSuspended = item.estado === 'suspendida';
+  const isChange = item.estado === 'cambio' || item.estado === 'cambio_aula' || item.estado === 'cambio_horario';
 
-  let alertLabel = "";
-  if(item.estado === "suspendida") alertLabel = "SUSPENDIDA";
-  else if(item.estado === "cambio_aula") alertLabel = "CAMBIO DE AULA";
-  else if(item.estado === "cambio_horario") alertLabel = "CAMBIO DE HORARIO";
-  else alertLabel = "AVISO";
+  let cardExtraClass = '';
+  let badgeClass = item.live ? 'live' : 'soon';
+  let badgeText = item.live ? 'EN CURSO' : 'PRÓXIMAMENTE';
+
+  if(isSuspended){
+    cardExtraClass = 'alert';
+    badgeClass = 'alert-badge';
+    badgeText = 'SUSPENDIDA';
+  } else if(isChange){
+    cardExtraClass = 'change';
+    badgeClass = 'change-badge';
+    badgeText = item.estado === 'cambio_horario' ? 'CAMBIO DE HORARIO' : 'CAMBIO DE AULA';
+  }
+
+  const note = (isSuspended || isChange) && item.mensaje ? `<div class="alert-message">${item.mensaje}</div>` : '';
 
   return `
-    <div class="card ${visualClass} ${isAlert ? 'alert' : ''}">
+    <div class="card ${visualClass} ${cardExtraClass}">
       <div>
         <div class="top">
           <div class="fac">${facultyLabel[item.facultad] || item.facultad}</div>
-          <div class="status ${isAlert ? 'alert-badge' : (item.live ? 'live' : 'soon')}">${isAlert ? alertLabel : (item.live ? 'EN CURSO' : 'PRÓXIMAMENTE')}</div>
+          <div class="status ${badgeClass}">${badgeText}</div>
         </div>
         <h2>${item.materia}</h2>
-        ${isAlert && item.mensaje ? `<div class="alert-message">${item.mensaje}</div>` : ``}
+        ${note}
       </div>
       <div class="info">
         <div class="info-line">${locationIcon}<span>${item.aula}</span></div>
@@ -484,7 +496,6 @@ function render(){
     const current = pages[page] || [];
     content.innerHTML = `<div class="grid">${current.map(createCard).join('')}</div>`;
   }
-
   footerCount.textContent = `${visible.length} materias en este momento`;
 }
 
@@ -500,9 +511,7 @@ async function refreshDataAndRender(){
 
 refreshDataAndRender();
 setInterval(refreshDataAndRender, 60000);
-setInterval(() => {
-  location.reload();
-}, 1000 * 60 * 10);
+setInterval(() => { location.reload(); }, 1000 * 60 * 10);
 setInterval(() => {
   if(pages.length > 1){
     page = (page + 1) % pages.length;
