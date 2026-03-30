@@ -1,212 +1,371 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pantalla institucional UCA</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #000;
-      color: #fff;
-      overflow: hidden;
-    }
-    .screen {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background: linear-gradient(180deg, #060606 0%, #111 100%);
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 28px 14px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-    }
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .logo {
-      width: 56px;
-      height: 56px;
-      object-fit: contain;
-      filter: brightness(0) invert(1);
-      background: rgba(255,255,255,.08);
-      border-radius: 16px;
-      padding: 8px;
-    }
-    h1 {
-      margin: 0;
-      font-size: 34px;
-      line-height: 1.1;
-    }
-    .sub {
-      margin-top: 4px;
-      color: rgba(255,255,255,.65);
-      font-size: 18px;
-    }
-    .clock {
-      text-align: right;
-    }
-    .clock-time {
-      font-size: 22px;
-      font-weight: 700;
-    }
-    .clock-sub {
-      color: rgba(255,255,255,.45);
-      font-size: 14px;
-      margin-top: 4px;
-    }
-    .legend {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      padding: 14px 28px 0;
-    }
-    .pill {
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: 14px;
-    }
-    .eco { background: #f97316; color: #fff; }
-    .der { background: #7c3aed; color: #fff; }
-    .sal { background: #3b82f6; color: #fff; }
-    .qui { background: #facc15; color: #111; }
-    .status-live { background: #10b981; color: #fff; }
-    .status-soon { background: #9ca3af; color: #fff; }
-    .content {
-      flex: 1;
-      padding: 18px 28px 20px;
-      display: flex;
-      align-items: stretch;
-    }
-    .grid {
-      width: 100%;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 18px;
-      align-content: start;
-    }
-    .card {
-      border-radius: 26px;
-      padding: 18px;
-      min-height: 240px;
-      max-height: 300px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      color: #111;
-      border: 2px solid transparent;
-      box-shadow: 0 12px 30px rgba(0,0,0,.25);
-    }
-    .card.eco { background: #fff7ed; border-color: #fed7aa; }
-    .card.der { background: #f5f3ff; border-color: #ddd6fe; }
-    .card.sal { background: #eff6ff; border-color: #bfdbfe; }
-    .card.qui { background: #fefce8; border-color: #fde68a; }
-    .topline {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .faculty-tag {
-      max-width: 165px;
-      text-align: center;
-      font-size: 13px;
-      line-height: 1.15;
-      font-weight: 700;
-      border-radius: 999px;
-      padding: 8px 10px;
-    }
-    .card.eco .faculty-tag { background: #f97316; color: #fff; }
-    .card.der .faculty-tag { background: #7c3aed; color: #fff; }
-    .card.sal .faculty-tag { background: #3b82f6; color: #fff; }
-    .card.qui .faculty-tag { background: #facc15; color: #111; }
-    .status-tag {
-      border-radius: 999px;
-      padding: 7px 10px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-    .status-tag.live { background: #10b981; color: #fff; font-size: 12px; }
-    .status-tag.soon { background: #9ca3af; color: #fff; font-size: 11px; }
-    .title {
-      font-size: 26px;
-      line-height: 1.15;
-      font-weight: 800;
-      margin: 0 0 16px;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .info {
-      display: grid;
-      gap: 10px;
-      margin-top: auto;
-      font-size: 18px;
-    }
-    .info-row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .icon {
-      width: 22px;
-      text-align: center;
-      flex: 0 0 22px;
-    }
-    .empty {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .empty-box {
-      width: min(1100px, 100%);
-      border-radius: 30px;
-      border: 1px solid rgba(255,255,255,.1);
-      background: rgba(255,255,255,.04);
-      padding: 56px 40px;
-      text-align: center;
-    }
-    .empty-box h2 {
-      margin: 0 0 16px;
-      font-size: 52px;
-    }
-    .empty-box p {
-      margin: 0;
-      color: rgba(255,255,255,.65);
-      font-size: 24px;
-      line-height: 1.35;
-    }
-    .footer {
-      border-top: 1px solid rgba(255,255,255,.08);
-      padding: 14px 28px;
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      color: rgba(255,255,255,.45);
-      font-size: 16px;
-    }
-  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UCA · Distribución de aulas</title>
+<style>
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background:#000;
+    color:#fff;
+    overflow:hidden;
+    cursor:none;
+  }
+  .screen{
+    width:100vw;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:linear-gradient(180deg,#0a2448 0%, #0d2f5f 35%, #102846 100%);
+  }
+  .header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 24px 14px;
+    border-bottom:1px solid rgba(255,255,255,.12);
+  }
+  .header-left{
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+  .logo{
+    width:72px;
+    height:72px;
+    object-fit:contain;
+    display:block;
+    filter: brightness(0) invert(1);
+  }
+  .title{
+    font-size:31px;
+    font-weight:800;
+    line-height:1.05;
+    letter-spacing:.2px;
+  }
+  .sub{
+    color:#d7e2f0;
+    font-size:16px;
+    margin-top:5px;
+  }
+  .clock{
+    text-align:right;
+  }
+  .clock-time{
+    font-size:23px;
+    font-weight:800;
+  }
+  .clock-sub{
+    color:#b6c4d7;
+    font-size:13px;
+    margin-top:4px;
+  }
+  .legend{
+    display:flex;
+    gap:10px;
+    padding:14px 24px 0;
+    flex-wrap:wrap;
+  }
+  .pill{
+    padding:9px 15px;
+    border-radius:20px;
+    font-size:14px;
+    font-weight:800;
+  }
+  .eco{background:#f97316;color:#fff}
+  .der{background:#7c3aed;color:#fff}
+  .sal{background:#3b82f6;color:#fff}
+  .qui{background:#facc15;color:#111}
+  .content{
+    flex:1;
+    padding:18px 24px;
+    min-height:0;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(4, minmax(0,1fr));
+    gap:20px;
+    align-items:start;
+  }
+  .card{
+    background:#f6f7fb;
+    color:#111;
+    border-radius:22px;
+    padding:18px;
+    min-height:252px;
+    height:252px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    box-shadow:0 14px 34px rgba(0,0,0,.26);
+    border:1px solid rgba(0,0,0,.04);
+    animation:fadeInUp .55s ease both;
+  }
+  @keyframes fadeInUp{
+    from{opacity:0;transform:translateY(14px) scale(.985);}
+    to{opacity:1;transform:translateY(0) scale(1);}
+  }
+  .top{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    align-items:flex-start;
+  }
+  .fac{
+    padding:9px 14px;
+    font-size:15px;
+    border-radius:20px;
+    font-size:14px;
+    color:#fff;
+    font-weight:800;
+    line-height:1.1;
+    max-width:160px;
+    text-align:center;
+  }
+  .status{
+    color:#fff;
+    padding:9px 14px;
+    font-size:15px;
+    border-radius:20px;
+    font-size:14px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+  .status.live{background:#10b981}
+  .status.soon{background:#9ca3af}
+  .status.alert-badge{background:#b91c1c}
+  .status.change-badge{background:#b91c1c}
+
+  .card.eco .fac{background:#f97316}
+  .card.der .fac{background:#7c3aed}
+  .card.sal .fac{background:#3b82f6}
+  .card.qui .fac{background:#facc15;color:#111}
+
+  .card.eco h2{color:#f97316}
+  .card.der h2{color:#7c3aed}
+  .card.sal h2{color:#3b82f6}
+  .card.qui h2{color:#b98900}
+
+  .card.alert{
+    background:#dc2626 !important;
+    color:#fff !important;
+    border:1px solid rgba(255,255,255,.10);
+  }
+  .card.alert .fac{
+    background:unset !important;
+  }
+  .card.alert h2,
+  .card.alert .alert-message,
+  .card.alert .info{
+    color:#fff !important;
+  }
+  .card.alert .icon-wrap{color:#fff !important;}
+
+  .card.change{
+    background:#dc2626 !important;
+    color:#fff !important;
+    border:1px solid rgba(255,255,255,.10);
+  }
+  .card.change .fac{
+    background:unset !important;
+  }
+  .card.change h2,
+  .card.change .alert-message,
+  .card.change .info{
+    color:#fff !important;
+  }
+  .card.change .icon-wrap{
+    color:#fff !important;
+  }
+
+  .card.alert.eco .fac, .card.change.eco .fac{background:#f97316 !important;color:#fff !important;}
+  .card.alert.der .fac, .card.change.der .fac{background:#7c3aed !important;color:#fff !important;}
+  .card.alert.sal .fac, .card.change.sal .fac{background:#3b82f6 !important;color:#fff !important;}
+  .card.alert.qui .fac, .card.change.qui .fac{background:#facc15 !important;color:#111 !important;}
+
+  h2{
+    font-size:24px;
+    margin-bottom:14px;
+    line-height:1.12;
+    margin:8px 0 0 0;
+    display:-webkit-box;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+    font-weight:800;
+  }
+  .alert-message{
+    margin-top:10px;
+    font-size:15px;
+    font-weight:800;
+    line-height:1.25;
+    opacity:.98;
+  }
+  .info{
+    font-size:17px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .info-line{
+    display:flex;
+    align-items:center;
+    gap:11px;
+  }
+  .icon-wrap{
+    width:24px;
+    height:24px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 22px;
+  }
+  .icon-svg{
+    width:22px;
+    height:22px;
+    stroke:currentColor;
+    fill:none;
+    stroke-width:1.9;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+  .card.eco .icon-wrap{color:#f97316}
+  .card.der .icon-wrap{color:#7c3aed}
+  .card.sal .icon-wrap{color:#3b82f6}
+  .card.qui .icon-wrap{color:#b98900}
+
+  .footer{
+    display:flex;
+    justify-content:space-between;
+    padding:14px 24px;
+    color:#d7e2f0;
+    border-top:1px solid rgba(255,255,255,.12);
+    font-size:15px;
+  }
+  .empty{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .empty-box{
+    border:1px solid rgba(255,255,255,.16);
+    background:rgba(255,255,255,.06);
+    border-radius:28px;
+    padding:42px;
+    text-align:center;
+    width:min(980px,100%);
+  }
+  .empty-box h2{font-size:36px;color:#fff}
+  .empty-box p{color:#d4dbe5;font-size:18px;margin-top:12px}
+
+  /* Ajuste automático proporcional para distintas pantallas */
+  .header{
+    padding:clamp(14px, 1.4vw, 20px) clamp(16px, 1.8vw, 24px) clamp(10px, 1vw, 14px);
+    gap:clamp(12px, 1.6vw, 18px);
+  }
+  .header-left{
+    gap:clamp(10px, 1.2vw, 16px);
+    min-width:0;
+  }
+  .logo{
+    width:clamp(46px, 4.2vw, 72px);
+    height:clamp(46px, 4.2vw, 72px);
+    flex:0 0 auto;
+  }
+  .title{
+    font-size:clamp(22px, 2.1vw, 31px);
+  }
+  .sub{
+    font-size:clamp(12px, .95vw, 16px);
+  }
+  .clock-time{
+    font-size:clamp(16px, 1.5vw, 23px);
+  }
+  .clock-sub{
+    font-size:clamp(10px, .8vw, 13px);
+  }
+  .legend{
+    gap:clamp(8px, .8vw, 10px);
+    padding:clamp(10px, 1vw, 14px) clamp(16px, 1.8vw, 24px) 0;
+  }
+  .pill{
+    padding:clamp(7px, .8vw, 9px) clamp(11px, 1vw, 15px);
+    font-size:clamp(11px, .9vw, 14px);
+  }
+  .content{
+    padding:clamp(14px, 1.2vw, 18px) clamp(16px, 1.8vw, 24px);
+  }
+  .grid{
+    gap:clamp(12px, 1.2vw, 20px);
+  }
+  .card{
+    border-radius:clamp(16px, 1.6vw, 22px);
+    padding:clamp(14px, 1.2vw, 18px);
+    min-height:clamp(200px, 24vh, 252px);
+    height:clamp(200px, 24vh, 252px);
+  }
+  .top{
+    gap:clamp(8px, .8vw, 10px);
+  }
+  .fac{
+    padding:clamp(7px, .7vw, 9px) clamp(10px, .9vw, 14px);
+    font-size:clamp(12px, .95vw, 14px);
+    max-width:min(55%, 180px);
+  }
+  .status{
+    padding:clamp(7px, .7vw, 9px) clamp(10px, .9vw, 14px);
+    font-size:clamp(12px, .95vw, 14px);
+  }
+  h2{
+    font-size:clamp(18px, 1.45vw, 24px);
+    margin:clamp(10px, .9vw, 14px) 0 0 0;
+  }
+  .alert-message{
+    font-size:clamp(12px, .95vw, 15px);
+    margin-top:clamp(8px, .8vw, 10px);
+  }
+  .info{
+    font-size:clamp(13px, 1.05vw, 17px);
+    gap:clamp(7px, .8vw, 10px);
+  }
+  .info-line{
+    gap:clamp(8px, .8vw, 11px);
+  }
+  .icon-wrap{
+    width:clamp(18px, 1.4vw, 24px);
+    height:clamp(18px, 1.4vw, 24px);
+    flex:0 0 clamp(18px, 1.4vw, 24px);
+  }
+  .icon-svg{
+    width:clamp(17px, 1.25vw, 22px);
+    height:clamp(17px, 1.25vw, 22px);
+  }
+  .footer{
+    padding:clamp(10px, 1vw, 14px) clamp(16px, 1.8vw, 24px);
+    font-size:clamp(12px, .95vw, 15px);
+  }
+  .empty-box{
+    padding:clamp(24px, 3vw, 42px);
+  }
+  .empty-box h2{
+    font-size:clamp(24px, 2.4vw, 36px);
+  }
+  .empty-box p{
+    font-size:clamp(14px, 1.2vw, 18px);
+  }
+
   @media (max-width: 1200px){
     .grid{
       grid-template-columns:repeat(3, minmax(0,1fr));
     }
-    .content{
-      overflow:auto;
-    }
     .card{
-      min-height:220px;
+      min-height:clamp(200px, 22vh, 236px);
+      height:clamp(200px, 22vh, 236px);
     }
   }
 
@@ -228,10 +387,6 @@
     }
     .grid{
       grid-template-columns:repeat(2, minmax(0,1fr));
-      height:auto;
-    }
-    .content{
-      overflow:auto;
     }
     .card{
       min-height:220px;
@@ -254,14 +409,10 @@
     }
     .grid{
       grid-template-columns:1fr;
-      height:auto;
-    }
-    .content{
-      overflow:auto;
     }
     .card{
-      height:auto;
       min-height:200px;
+      height:auto;
     }
     .top{
       flex-direction:column;
@@ -273,22 +424,31 @@
     }
   }
 
-  @media (max-height: 760px){
+  @media (max-height: 820px){
     .header{
       padding:10px 16px 8px;
     }
     .logo{
-      width:44px;
-      height:44px;
+      width:46px;
+      height:46px;
     }
     .title{
       font-size:24px;
     }
     .sub{
       font-size:12px;
+      margin-top:2px;
+    }
+    .clock-time{
+      font-size:18px;
+    }
+    .clock-sub{
+      font-size:10px;
+      margin-top:2px;
     }
     .legend{
       padding:8px 16px 0;
+      gap:6px;
     }
     .pill{
       padding:6px 10px;
@@ -302,14 +462,32 @@
     }
     .card{
       padding:12px;
+      min-height:185px;
+      height:185px;
     }
     h2{
       font-size:18px;
       -webkit-line-clamp:2;
     }
+    .alert-message{
+      font-size:12px;
+      -webkit-line-clamp:2;
+      display:-webkit-box;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+    }
     .info{
       font-size:12px;
       gap:6px;
+    }
+    .icon-wrap{
+      width:17px;
+      height:17px;
+      flex:0 0 17px;
+    }
+    .icon-svg{
+      width:16px;
+      height:16px;
     }
     .footer{
       padding:8px 16px;
@@ -320,186 +498,271 @@
 </style>
 </head>
 <body>
-  <div class="screen">
-    <div class="header">
-      <div class="header-left">
-        <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Universidad_Cat%C3%B3lica_Argentina.png/240px-Universidad_Cat%C3%B3lica_Argentina.png" alt="UCA">
-        <div>
-          <h1>UCA · Pantalla institucional</h1>
-          <div class="sub" id="subtitle">Materias próximas y en curso</div>
-        </div>
-      </div>
-      <div class="clock">
-        <div class="clock-time" id="clock"></div>
-        <div class="clock-sub">Actualización en vivo</div>
+<div class="screen">
+  <div class="header">
+    <div class="header-left">
+      <img class="logo" src="./logo.png" alt="UCA">
+      <div>
+        <div class="title">UCA · Distribución de aulas</div>
+        <div class="sub" id="subtitle">Materias próximas y en curso</div>
       </div>
     </div>
-
-    <div class="legend">
-      <div class="pill eco">Económicas</div>
-      <div class="pill der">Derecho y Cs. Sociales</div>
-      <div class="pill sal">Cs. de la Salud</div>
-      <div class="pill qui">Química e Ingeniería</div>
-      <div class="pill status-soon">Próximamente</div>
-      <div class="pill status-live">En curso</div>
-    </div>
-
-    <div class="content" id="content"></div>
-
-    <div class="footer">
-      <span>Sistema de información académica · Pantalla tipo aeropuerto</span>
-      <span id="footerCount"></span>
+    <div class="clock">
+      <div class="clock-time" id="clock">--:--</div>
+      <div class="clock-sub">Actualización en vivo</div>
     </div>
   </div>
 
-  <script>
-    const data = [
-      { facultad: "económicas", dia: "jueves", materia: "Administración", comision: "75AM", horario: "09:40 a 11:40", aula: "209 · Edificio 3" },
-      { facultad: "económicas", dia: "jueves", materia: "Contabilidad", comision: "75FM", horario: "09:40 a 11:40", aula: "2-N · Edificio 1" },
-      { facultad: "económicas", dia: "jueves", materia: "Estadística", comision: "75AM", horario: "09:40 a 11:40", aula: "103 · Edificio 3" },
-      { facultad: "económicas", dia: "jueves", materia: "Macroeconomía", comision: "75CM", horario: "09:40 a 11:40", aula: "201 · Edificio 3" },
-      { facultad: "económicas", dia: "jueves", materia: "Introducción a la Teología", comision: "75AM", horario: "09:40 a 11:40", aula: "202 · Edificio 3" },
-      { facultad: "económicas", dia: "jueves", materia: "Dirección Comercial", comision: "75AM", horario: "07:30 a 10:30", aula: "301/302 · Edificio 4" },
-      { facultad: "derecho", dia: "jueves", materia: "Derecho Ambiental y Recursos Naturales", comision: "74MM", horario: "09:40 a 12:50", aula: "303 · Edificio 3" },
-      { facultad: "derecho", dia: "jueves", materia: "Derecho Sucesorio", comision: "74MM", horario: "09:40 a 11:40", aula: "S-07 · Edificio 3" },
-      { facultad: "derecho", dia: "jueves", materia: "Introducción al Derecho", comision: "74CM", horario: "09:40 a 12:50", aula: "201 · Edificio 2" },
-      { facultad: "derecho", dia: "jueves", materia: "Taller de escritura jurídica y uso de las fuentes de información", comision: "74BM", horario: "09:40 a 12:50", aula: "1-A · Edificio 1" },
-      { facultad: "salud", dia: "jueves", materia: "Alteraciones del Lenguaje y Comunicación en Niños I", comision: "34BM", horario: "09:40 a 11:40", aula: "305 · Edificio 4" },
-      { facultad: "salud", dia: "jueves", materia: "Introducción a la Teología", comision: "34DM", horario: "09:40 a 11:40", aula: "401 · Edificio 4" },
-      { facultad: "salud", dia: "jueves", materia: "Microbiología y Toxicología", comision: "34AM", horario: "09:40 a 11:40", aula: "2-I · Edificio 1" },
-      { facultad: "salud", dia: "jueves", materia: "Neurología II", comision: "34BM", horario: "09:40 a 11:40", aula: "304 · Edificio 4" },
-      { facultad: "salud", dia: "jueves", materia: "Química Básica", comision: "34AM", horario: "09:40 a 11:40", aula: "2-M · Edificio 1" },
-      { facultad: "quimica", dia: "jueves", materia: "Cálculo Elemental", comision: "70AM", horario: "09:40 a 11:40", aula: "312 · Edificio 3" },
-      { facultad: "quimica", dia: "jueves", materia: "Representación Gráfica", comision: "70AM", horario: "09:40 a 11:40", aula: "102 · Edificio 4" },
-      { facultad: "quimica", dia: "jueves", materia: "Estabilidad", comision: "70AM", horario: "09:40 a 12:30", aula: "204 · Edificio 3" },
-      { facultad: "quimica", dia: "jueves", materia: "Introducción a la Ingeniería", comision: "70BM", horario: "09:40 a 11:00", aula: "1-C · Edificio 1" },
-      { facultad: "quimica", dia: "jueves", materia: "Química Analítica", comision: "70AM", horario: "10:15 a 11:40", aula: "PB-001 · Edificio 4" }
-    ];
+  <div class="legend">
+    <div class="pill eco">Económicas</div>
+    <div class="pill der">Derecho y Cs Sociales</div>
+    <div class="pill sal">Salud</div>
+    <div class="pill qui">Química e Ingeniería</div>
+  </div>
 
-    const facultyOrder = ["económicas", "derecho", "salud", "quimica"];
-    const facultyLabel = {
-      "económicas": "Económicas",
-      "derecho": "Derecho y Cs. Sociales",
-      "salud": "Salud",
-      "quimica": "Química e Ing."
-    };
+  <div class="content" id="content"></div>
 
-    const content = document.getElementById("content");
-    const footerCount = document.getElementById("footerCount");
-    const clock = document.getElementById("clock");
-    const subtitle = document.getElementById("subtitle");
+  <div class="footer">
+    <div>Sistema académico</div>
+    <div id="footerCount">0 materias en este momento</div>
+  </div>
+</div>
 
-    let currentPage = 0;
-    let visiblePages = [];
+<script>
+const rotationMs = 8000;
+const TEST_MODE = false;
+const TEST_DAY = "viernes";
+const TEST_TIME = 600;
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNK3qYBQUNE0skOye3iYuXE1bSxw2cfmBUjMF1ATBwcJjOP7IwuIo3kPu36KV0Gm-8N61cN9xismYB/pub?output=csv";
 
-    function parseRange(range) {
-      const [start, end] = range.split(" a ");
-      const [sh, sm] = start.split(":").map(Number);
-      const [eh, em] = end.split(":").map(Number);
-      return { start: sh * 60 + sm, end: eh * 60 + em };
+const facultyOrder = ["economicas","derecho","salud","quimica"];
+const facultyLabel = {
+  "economicas":"Económicas",
+  "derecho":"Derecho y Cs Sociales",
+  "salud":"Salud",
+  "quimica":"Química"
+};
+const facultyClass = {
+  "economicas":"eco",
+  "derecho":"der",
+  "salud":"sal",
+  "quimica":"qui"
+};
+
+const content = document.getElementById('content');
+const footerCount = document.getElementById('footerCount');
+const subtitle = document.getElementById('subtitle');
+const clockEl = document.getElementById('clock');
+
+let data = [];
+let page = 0;
+let pages = [];
+
+function parseCSV(text){
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let inQuotes = false;
+  for(let i = 0; i < text.length; i++){
+    const char = text[i];
+    const next = text[i + 1];
+    if(char === '"'){
+      if(inQuotes && next === '"'){ cell += '"'; i++; }
+      else { inQuotes = !inQuotes; }
+    } else if(char === ',' && !inQuotes){
+      row.push(cell); cell = "";
+    } else if((char === '\n' || char === '\r') && !inQuotes){
+      if(char === '\r' && next === '\n') i++;
+      if(cell.length || row.length){
+        row.push(cell); rows.push(row); row = []; cell = "";
+      }
+    } else {
+      cell += char;
     }
+  }
+  if(cell.length || row.length){ row.push(cell); rows.push(row); }
+  return rows;
+}
 
-    function dayNameES(date) {
-      return date.toLocaleDateString("es-AR", { weekday: "long" }).toLowerCase();
-    }
+function normalizeText(value){
+  return (value || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
 
-    function minutesNow(date) {
-      return date.getHours() * 60 + date.getMinutes();
-    }
+function parseRange(range){
+  const [start, end] = range.split(' a ');
+  const [sh, sm] = start.replace('.', ':').split(':').map(Number);
+  const [eh, em] = end.replace('.', ':').split(':').map(Number);
+  return { start: sh*60 + sm, end: eh*60 + em };
+}
 
-    function enrichItems() {
-      const now = new Date();
-      const day = dayNameES(now);
-      const mins = minutesNow(now);
-      subtitle.textContent = `${day.charAt(0).toUpperCase() + day.slice(1)} · Materias próximas y en curso`;
+function getNowContext(){
+  if(TEST_MODE){
+    const hours = Math.floor(TEST_TIME/60).toString().padStart(2,'0');
+    const mins = (TEST_TIME%60).toString().padStart(2,'0');
+    return { day: TEST_DAY, normalizedDay: normalizeText(TEST_DAY), minutes: TEST_TIME, label: `${TEST_DAY}, ${hours}:${mins}` };
+  }
+  const now = new Date();
+  const day = now.toLocaleDateString('es-AR', { weekday:'long' }).toLowerCase();
+  const minutes = now.getHours()*60 + now.getMinutes();
+  const label = now.toLocaleString('es-AR', { weekday:'long', hour:'2-digit', minute:'2-digit' });
+  return { day, normalizedDay: normalizeText(day), minutes, label };
+}
 
-      const visibles = data
-        .filter(item => item.dia === day)
-        .map(item => {
-          const slot = parseRange(item.horario);
-          const upcoming = mins >= slot.start - 15 && mins < slot.start;
-          const active = mins >= slot.start && mins < slot.end;
-          const status = active ? "live" : upcoming ? "soon" : "off";
-          return { ...item, status };
-        })
-        .filter(item => item.status !== "off")
-        .sort((a, b) => facultyOrder.indexOf(a.facultad) - facultyOrder.indexOf(b.facultad));
+function chunk(arr,size){
+  const out = [];
+  for(let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+  return out;
+}
 
-      return visibles;
-    }
+async function loadData(){
+  const res = await fetch(SHEET_URL + (SHEET_URL.includes("?") ? "&" : "?") + "_t=" + Date.now(), { cache: "no-store" });
+  const text = await res.text();
+  const rows = parseCSV(text);
+  if(rows.length <= 1) return [];
 
-    function chunk(arr, size) {
-      const out = [];
-      for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
-      return out;
-    }
+  const headers = rows[0].map(h => normalizeText(h));
+  const idx = {
+    id: headers.indexOf("id"),
+    dia: headers.indexOf("dia"),
+    facultad: headers.indexOf("facultad"),
+    materia: headers.indexOf("materia"),
+    comision: headers.indexOf("comision"),
+    horario_inicio: headers.indexOf("horario_inicio"),
+    horario_fin: headers.indexOf("horario_fin"),
+    aula: headers.indexOf("aula"),
+    edificio: headers.indexOf("edificio"),
+    estado: headers.indexOf("estado"),
+    mensaje: headers.indexOf("mensaje"),
+    visible: headers.indexOf("visible")
+  };
 
-    function createCard(item) {
-      return `
-        <div class="card ${item.facultad}">
-          <div>
-            <div class="topline">
-              <div class="faculty-tag">${facultyLabel[item.facultad]}</div>
-              <div class="status-tag ${item.status === "live" ? "live" : "soon"}">
-                ${item.status === "live" ? "EN CURSO" : "PRÓXIMAMENTE"}
-              </div>
-            </div>
-            <h2 class="title">${item.materia}</h2>
-          </div>
-          <div class="info">
-            <div class="info-row"><span class="icon">📍</span><span>${item.aula}</span></div>
-            <div class="info-row"><span class="icon">👥</span><span>${item.comision}</span></div>
-            <div class="info-row"><span class="icon">🕒</span><span>${item.horario}</span></div>
-          </div>
+  return rows.slice(1)
+    .filter(cols => cols.some(c => c && c.trim() !== ""))
+    .map(cols => {
+      const diaRaw = cols[idx.dia] || "";
+      const facRaw = cols[idx.facultad] || "";
+      const visibleRaw = (cols[idx.visible] || "").trim().toLowerCase();
+      return {
+        id: cols[idx.id] || "",
+        dia: diaRaw.trim(),
+        diaNorm: normalizeText(diaRaw),
+        facultad: normalizeText(facRaw),
+        materia: (cols[idx.materia] || "").trim(),
+        comision: (cols[idx.comision] || "").trim(),
+        horario_inicio: (cols[idx.horario_inicio] || "").trim(),
+        horario_fin: (cols[idx.horario_fin] || "").trim(),
+        horario: `${(cols[idx.horario_inicio] || "").trim()} a ${(cols[idx.horario_fin] || "").trim()}`,
+        aula: `${(cols[idx.aula] || "").trim()} · ${(cols[idx.edificio] || "").trim()}`.replace(/^ · | · $/g, ""),
+        estado: ((cols[idx.estado] || "normal").trim().toLowerCase() || "normal"),
+        mensaje: (cols[idx.mensaje] || "").trim(),
+        visible: visibleRaw === "si" || visibleRaw === "sí" || visibleRaw === "true" || visibleRaw === "1"
+      };
+    });
+}
+
+function getVisible(){
+  const ctx = getNowContext();
+  subtitle.textContent = `${ctx.day.charAt(0).toUpperCase()+ctx.day.slice(1)} · Materias próximas y en curso`;
+  clockEl.textContent = ctx.label;
+
+  return data
+    .filter(item => item.visible)
+    .filter(item => item.diaNorm === ctx.normalizedDay)
+    .map(item => {
+      const slot = parseRange(item.horario);
+      const live = ctx.minutes >= slot.start && ctx.minutes < slot.end;
+      const soon = ctx.minutes >= slot.start - 15 && ctx.minutes < slot.start;
+      return { ...item, live, soon, slotStart:slot.start };
+    })
+    .filter(item => item.live || item.soon)
+    .sort((a,b) => {
+      const order = facultyOrder.indexOf(a.facultad) - facultyOrder.indexOf(b.facultad);
+      if(order !== 0) return order;
+      return a.slotStart - b.slotStart;
+    });
+}
+
+function createCard(item){
+  const locationIcon = `<span class="icon-wrap"><svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-4.35-6-10a6 6 0 1 1 12 0c0 5.65-6 10-6 10Z"></path><circle cx="12" cy="11" r="2.5"></circle></svg></span>`;
+  const groupIcon = `<span class="icon-wrap"><svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1"></path><circle cx="9.5" cy="8" r="3"></circle><path d="M20 21v-1a4 4 0 0 0-3-3.87"></path><path d="M14 5.13a3 3 0 0 1 0 5.74"></path></svg></span>`;
+  const timeIcon = `<span class="icon-wrap"><svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>`;
+  const visualClass = facultyClass[item.facultad] || '';
+  const isSuspended = item.estado === 'suspendida';
+  const isChange = item.estado === 'cambio' || item.estado === 'cambio_aula' || item.estado === 'cambio_horario';
+
+  let cardExtraClass = '';
+  let badgeClass = item.live ? 'live' : 'soon';
+  let badgeText = item.live ? 'EN CURSO' : 'PRÓXIMAMENTE';
+
+  if(isSuspended){
+    cardExtraClass = 'alert';
+    badgeClass = 'alert-badge';
+    badgeText = 'SUSPENDIDA';
+  } else if(isChange){
+    cardExtraClass = 'change';
+    badgeClass = 'change-badge';
+    badgeText = item.estado === 'cambio_horario' ? 'CAMBIO DE HORARIO' : 'CAMBIO DE AULA';
+  }
+
+  const note = (isSuspended || isChange) && item.mensaje ? `<div class="alert-message">${item.mensaje}</div>` : '';
+
+  return `
+    <div class="card ${visualClass} ${cardExtraClass}">
+      <div>
+        <div class="top">
+          <div class="fac">${facultyLabel[item.facultad] || item.facultad}</div>
+          <div class="status ${badgeClass}">${badgeText}</div>
         </div>
-      `;
-    }
+        <h2>${item.materia}</h2>
+        ${note}
+      </div>
+      <div class="info">
+        <div class="info-line">${locationIcon}<span>${item.aula}</span></div>
+        <div class="info-line">${groupIcon}<span>${item.comision}</span></div>
+        <div class="info-line">${timeIcon}<span>${item.horario}</span></div>
+      </div>
+    </div>`;
+}
 
-    function render() {
-      const visibles = enrichItems();
-      visiblePages = chunk(visibles, 8);
-      if (currentPage >= visiblePages.length) currentPage = 0;
+function render(){
+  const visible = getVisible();
+  pages = chunk(visible, 8);
+  if(page >= pages.length) page = 0;
 
-      if (!visibles.length) {
-        content.innerHTML = `
-          <div class="empty">
-            <div class="empty-box">
-              <h2>En este momento no hay materias visibles</h2>
-              <p>La pantalla se actualizará automáticamente 15 minutos antes del inicio de cada clase y durante el horario en curso.</p>
-            </div>
-          </div>
-        `;
-      } else {
-        const page = visiblePages[currentPage] || [];
-        content.innerHTML = `<div class="grid">${page.map(createCard).join("")}</div>`;
-      }
+  if(!visible.length){
+    content.innerHTML = `<div class="empty"><div class="empty-box"><h2>En este momento no hay materias en curso</h2><p>La pantalla muestra materias 15 minutos antes de su inicio y durante su cursado real.</p></div></div>`;
+  } else {
+    const current = pages[page] || [];
+    content.innerHTML = `<div class="grid">${current.map(createCard).join('')}</div>`;
+  }
+  footerCount.textContent = `${visible.length} materias en este momento`;
+}
 
-      footerCount.textContent = `${visibles.length} materias visibles ahora · rotación cada 8 segundos`;
-    }
-
-    function updateClock() {
-      const now = new Date();
-      clock.textContent = now.toLocaleString("es-AR", {
-        weekday: "short",
-        hour: "2-digit",
-        minute: "2-digit"
-      });
-    }
-
-    updateClock();
+async function refreshDataAndRender(){
+  try{
+    data = await loadData();
     render();
+  } catch(error){
+    content.innerHTML = `<div class="empty"><div class="empty-box"><h2>Error al cargar la planilla</h2><p>Revisá que la hoja esté publicada como CSV y que los encabezados coincidan con la plantilla.</p></div></div>`;
+    console.error(error);
+  }
+}
 
-    setInterval(() => {
-      updateClock();
-      render();
-    }, 1000);
+refreshDataAndRender();
+setInterval(refreshDataAndRender, 60000);
+setInterval(() => { location.reload(); }, 1000 * 60 * 10);
+setInterval(() => {
+  if(pages.length > 1){
+    page = (page + 1) % pages.length;
+    render();
+  }
+}, rotationMs);
 
-    setInterval(() => {
-      if (visiblePages.length > 1) {
-        currentPage = (currentPage + 1) % visiblePages.length;
-        render();
-      }
-    }, 8000);
-  </script>
+document.addEventListener('click', () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  }
+});
+</script>
 </body>
 </html>
