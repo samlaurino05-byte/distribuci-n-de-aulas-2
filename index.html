@@ -25,54 +25,57 @@
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:20px 24px 14px;
+    gap:clamp(12px,2vw,28px);
+    padding:clamp(14px,1.6vw,20px) clamp(16px,2vw,24px) clamp(10px,1.2vw,14px);
     border-bottom:1px solid rgba(255,255,255,.12);
   }
   .header-left{
     display:flex;
     align-items:center;
-    gap:16px;
+    gap:clamp(10px,1.3vw,16px);
+    min-width:0;
   }
   .logo{
-    width:72px;
-    height:72px;
+    width:clamp(44px,4.5vw,72px);
+    height:clamp(44px,4.5vw,72px);
     object-fit:contain;
     display:block;
     filter: brightness(0) invert(1);
+    flex:0 0 auto;
   }
   .title{
-    font-size:31px;
+    font-size:clamp(20px,2.15vw,31px);
     font-weight:800;
     line-height:1.05;
     letter-spacing:.2px;
   }
   .sub{
     color:#d7e2f0;
-    font-size:16px;
+    font-size:clamp(12px,1vw,16px);
     margin-top:5px;
   }
   .clock{
     text-align:right;
   }
   .clock-time{
-    font-size:23px;
+    font-size:clamp(16px,1.6vw,23px);
     font-weight:800;
   }
   .clock-sub{
     color:#b6c4d7;
-    font-size:13px;
+    font-size:clamp(11px,.8vw,13px);
     margin-top:4px;
   }
   .legend{
     display:flex;
-    gap:10px;
-    padding:14px 24px 0;
+    gap:clamp(8px,.8vw,10px);
+    padding:clamp(10px,1vw,14px) clamp(16px,2vw,24px) 0;
     flex-wrap:wrap;
   }
   .pill{
-    padding:9px 15px;
+    padding:clamp(7px,.75vw,9px) clamp(11px,1vw,15px);
     border-radius:20px;
-    font-size:14px;
+    font-size:clamp(11px,.9vw,14px);
     font-weight:800;
   }
   .eco{background:#f97316;color:#fff}
@@ -81,22 +84,23 @@
   .qui{background:#facc15;color:#111}
   .content{
     flex:1;
-    padding:18px 24px;
+    padding:clamp(14px,1.3vw,18px) clamp(16px,2vw,24px);
     min-height:0;
+    overflow:hidden;
   }
   .grid{
     display:grid;
     grid-template-columns:repeat(4, minmax(0,1fr));
-    gap:20px;
+    gap:clamp(12px,1.4vw,20px);
     align-items:start;
   }
   .card{
     background:#f6f7fb;
     color:#111;
-    border-radius:22px;
-    padding:18px;
-    min-height:252px;
-    height:252px;
+    border-radius:clamp(16px,1.6vw,22px);
+    padding:clamp(14px,1.25vw,18px);
+    min-height:clamp(200px,24vh,252px);
+    height:clamp(200px,24vh,252px);
     display:flex;
     flex-direction:column;
     justify-content:space-between;
@@ -115,22 +119,20 @@
     align-items:flex-start;
   }
   .fac{
-    padding:9px 14px;
-    font-size:15px;
+    padding:clamp(7px,.75vw,9px) clamp(10px,.95vw,14px);
     border-radius:20px;
-    font-size:14px;
+    font-size:clamp(12px,.95vw,15px);
     color:#fff;
     font-weight:800;
     line-height:1.1;
-    max-width:160px;
+    max-width:min(48%,190px);
     text-align:center;
   }
   .status{
     color:#fff;
-    padding:9px 14px;
-    font-size:15px;
+    padding:clamp(7px,.75vw,9px) clamp(10px,.95vw,14px);
+    font-size:clamp(12px,.95vw,15px);
     border-radius:20px;
-    font-size:14px;
     font-weight:800;
     white-space:nowrap;
   }
@@ -187,10 +189,9 @@
   .card.alert.qui .fac, .card.change.qui .fac{background:#facc15 !important;color:#111 !important;}
 
   h2{
-    font-size:24px;
-    margin-bottom:14px;
+    font-size:clamp(18px,1.45vw,24px);
     line-height:1.12;
-    margin:8px 0 0 0;
+    margin:clamp(12px,1vw,18px) 0 0 0;
     display:-webkit-box;
     -webkit-line-clamp:3;
     -webkit-box-orient:vertical;
@@ -198,34 +199,34 @@
     font-weight:800;
   }
   .alert-message{
-    margin-top:10px;
-    font-size:15px;
+    margin-top:clamp(8px,.8vw,10px);
+    font-size:clamp(12px,.95vw,15px);
     font-weight:800;
     line-height:1.25;
     opacity:.98;
   }
   .info{
-    font-size:17px;
+    font-size:clamp(13px,1.08vw,17px);
     display:flex;
     flex-direction:column;
-    gap:10px;
+    gap:clamp(7px,.8vw,10px);
   }
   .info-line{
     display:flex;
     align-items:center;
-    gap:11px;
+    gap:clamp(8px,.8vw,11px);
   }
   .icon-wrap{
-    width:24px;
-    height:24px;
+    width:clamp(20px,1.5vw,24px);
+    height:clamp(20px,1.5vw,24px);
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    flex:0 0 22px;
+    flex:0 0 clamp(20px,1.5vw,24px);
   }
   .icon-svg{
-    width:22px;
-    height:22px;
+    width:clamp(18px,1.35vw,22px);
+    height:clamp(18px,1.35vw,22px);
     stroke:currentColor;
     fill:none;
     stroke-width:1.9;
@@ -240,10 +241,11 @@
   .footer{
     display:flex;
     justify-content:space-between;
-    padding:14px 24px;
+    gap:16px;
+    padding:clamp(10px,1vw,14px) clamp(16px,2vw,24px);
     color:#d7e2f0;
     border-top:1px solid rgba(255,255,255,.12);
-    font-size:15px;
+    font-size:clamp(12px,.95vw,15px);
   }
   .empty{
     width:100%;
@@ -256,12 +258,80 @@
     border:1px solid rgba(255,255,255,.16);
     background:rgba(255,255,255,.06);
     border-radius:28px;
-    padding:42px;
+    padding:clamp(24px,3vw,42px);
     text-align:center;
     width:min(980px,100%);
   }
-  .empty-box h2{font-size:36px;color:#fff}
-  .empty-box p{color:#d4dbe5;font-size:18px;margin-top:12px}
+  .empty-box h2{font-size:clamp(24px,2.5vw,36px);color:#fff}
+  .empty-box p{color:#d4dbe5;font-size:clamp(14px,1.2vw,18px);margin-top:12px}
+
+  @media (max-width: 1200px){
+    .grid{
+      grid-template-columns:repeat(3, minmax(0,1fr));
+    }
+    .card{
+      min-height:clamp(190px,23vh,240px);
+      height:clamp(190px,23vh,240px);
+    }
+  }
+
+  @media (max-width: 900px){
+    body{
+      overflow:auto;
+      cursor:auto;
+    }
+    .screen{
+      min-height:100vh;
+      height:auto;
+    }
+    .header{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+    .clock{
+      text-align:left;
+    }
+    .grid{
+      grid-template-columns:repeat(2, minmax(0,1fr));
+    }
+    .card{
+      min-height:220px;
+      height:auto;
+    }
+    .footer{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+  }
+
+  @media (max-width: 640px){
+    body{
+      overflow:auto;
+      cursor:auto;
+    }
+    .legend{
+      gap:6px;
+    }
+    .pill{
+      border-radius:14px;
+    }
+    .grid{
+      grid-template-columns:1fr;
+    }
+    .card{
+      min-height:unset;
+      height:auto;
+    }
+    .top{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+    .fac,
+    .status{
+      max-width:100%;
+    }
+  }
+
 </style>
 </head>
 <body>
