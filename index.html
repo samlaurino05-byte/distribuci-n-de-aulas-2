@@ -262,6 +262,275 @@
   }
   .empty-box h2{font-size:36px;color:#fff}
   .empty-box p{color:#d4dbe5;font-size:18px;margin-top:12px}
+
+  /* Ajuste automático proporcional sin tocar lógica ni estructura */
+  .header{
+    padding:clamp(10px, 1.2vw, 20px) clamp(12px, 1.6vw, 24px) clamp(8px, .9vw, 14px);
+    gap:clamp(10px, 1.2vw, 16px);
+  }
+  .header-left{
+    gap:clamp(10px, 1.2vw, 16px);
+    min-width:0;
+  }
+  .logo{
+    width:clamp(42px, 4vw, 72px);
+    height:clamp(42px, 4vw, 72px);
+    flex:0 0 auto;
+  }
+  .title{
+    font-size:clamp(20px, 2vw, 31px);
+  }
+  .sub{
+    font-size:clamp(11px, .95vw, 16px);
+    margin-top:3px;
+  }
+  .clock-time{
+    font-size:clamp(15px, 1.4vw, 23px);
+  }
+  .clock-sub{
+    font-size:clamp(10px, .75vw, 13px);
+    margin-top:2px;
+  }
+  .legend{
+    gap:clamp(6px, .8vw, 10px);
+    padding:clamp(8px, .9vw, 14px) clamp(12px, 1.6vw, 24px) 0;
+  }
+  .pill{
+    padding:clamp(6px, .7vw, 9px) clamp(10px, .95vw, 15px);
+    font-size:clamp(10px, .85vw, 14px);
+  }
+  .content{
+    flex:1;
+    padding:clamp(10px, 1vw, 18px) clamp(12px, 1.6vw, 24px);
+    min-height:0;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(4, minmax(0,1fr));
+    grid-template-rows:repeat(2, minmax(0,1fr));
+    gap:clamp(10px, 1.1vw, 20px);
+    align-items:stretch;
+    align-content:stretch;
+    height:100%;
+  }
+  .card{
+    border-radius:clamp(14px, 1.3vw, 22px);
+    padding:clamp(10px, .9vw, 18px);
+    min-height:0;
+    height:100%;
+    overflow:hidden;
+  }
+  .top{
+    gap:clamp(6px, .7vw, 10px);
+  }
+  .fac{
+    padding:clamp(6px, .6vw, 9px) clamp(9px, .85vw, 14px);
+    font-size:clamp(10px, .85vw, 14px);
+    max-width:min(55%, 180px);
+  }
+  .status{
+    padding:clamp(6px, .6vw, 9px) clamp(9px, .85vw, 14px);
+    font-size:clamp(10px, .85vw, 14px);
+  }
+  h2{
+    font-size:clamp(16px, 1.35vw, 24px);
+    line-height:1.1;
+    margin:clamp(8px, .8vw, 14px) 0 0 0;
+  }
+  .alert-message{
+    margin-top:clamp(6px, .7vw, 10px);
+    font-size:clamp(11px, .9vw, 15px);
+    line-height:1.18;
+  }
+  .info{
+    font-size:clamp(11px, .98vw, 17px);
+    gap:clamp(5px, .65vw, 10px);
+  }
+  .info-line{
+    gap:clamp(6px, .65vw, 11px);
+  }
+  .icon-wrap{
+    width:clamp(15px, 1.2vw, 24px);
+    height:clamp(15px, 1.2vw, 24px);
+    flex:0 0 clamp(15px, 1.2vw, 24px);
+  }
+  .icon-svg{
+    width:clamp(14px, 1.1vw, 22px);
+    height:clamp(14px, 1.1vw, 22px);
+  }
+  .footer{
+    padding:clamp(8px, .85vw, 14px) clamp(12px, 1.6vw, 24px);
+    font-size:clamp(10px, .85vw, 15px);
+  }
+  .empty-box{
+    padding:clamp(22px, 2.8vw, 42px);
+  }
+  .empty-box h2{
+    font-size:clamp(22px, 2.2vw, 36px);
+  }
+  .empty-box p{
+    font-size:clamp(13px, 1.1vw, 18px);
+  }
+
+  @media (max-height: 820px){
+    .header{
+      padding:8px 12px 6px;
+    }
+    .logo{
+      width:40px;
+      height:40px;
+    }
+    .title{
+      font-size:22px;
+    }
+    .sub{
+      font-size:11px;
+    }
+    .clock-time{
+      font-size:16px;
+    }
+    .clock-sub{
+      font-size:10px;
+    }
+    .legend{
+      padding:6px 12px 0;
+      gap:5px;
+    }
+    .pill{
+      padding:5px 8px;
+      font-size:10px;
+    }
+    .content{
+      padding:8px 12px;
+    }
+    .grid{
+      gap:8px;
+    }
+    .card{
+      padding:10px;
+    }
+    h2{
+      font-size:16px;
+      -webkit-line-clamp:2;
+    }
+    .alert-message{
+      font-size:11px;
+      display:-webkit-box;
+      -webkit-box-orient:vertical;
+      -webkit-line-clamp:2;
+      overflow:hidden;
+    }
+    .info{
+      font-size:11px;
+      gap:4px;
+    }
+    .footer{
+      padding:6px 12px;
+      font-size:10px;
+    }
+  }
+
+  @media (orientation: portrait){
+    body{
+      overflow:auto;
+      cursor:auto;
+    }
+    .screen{
+      min-height:100vh;
+      height:auto;
+    }
+    .header{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+    .clock{
+      text-align:left;
+    }
+    .grid{
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      grid-template-rows:repeat(4, minmax(0,1fr));
+      min-height:calc(100vh - 170px);
+      height:auto;
+    }
+    .card{
+      height:100%;
+      min-height:0;
+    }
+    .footer{
+      flex-direction:column;
+      align-items:flex-start;
+      gap:4px;
+    }
+  }
+
+  @media (orientation: portrait) and (max-width: 700px){
+    .header{
+      padding:8px 12px 6px;
+    }
+    .logo{
+      width:38px;
+      height:38px;
+    }
+    .title{
+      font-size:20px;
+    }
+    .sub{
+      font-size:10px;
+    }
+    .legend{
+      padding:6px 12px 0;
+    }
+    .pill{
+      padding:5px 8px;
+      font-size:10px;
+    }
+    .content{
+      padding:8px 12px;
+    }
+    .grid{
+      gap:8px;
+    }
+    .card{
+      padding:9px;
+    }
+    .top{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+    .fac,
+    .status{
+      max-width:100%;
+    }
+    h2{
+      font-size:15px;
+      -webkit-line-clamp:2;
+    }
+    .alert-message{
+      font-size:10px;
+      display:-webkit-box;
+      -webkit-box-orient:vertical;
+      -webkit-line-clamp:2;
+      overflow:hidden;
+    }
+    .info{
+      font-size:10px;
+      gap:4px;
+    }
+    .icon-wrap{
+      width:14px;
+      height:14px;
+      flex:0 0 14px;
+    }
+    .icon-svg{
+      width:13px;
+      height:13px;
+    }
+    .footer{
+      padding:6px 12px;
+      font-size:10px;
+    }
+  }
+
 </style>
 </head>
 <body>
