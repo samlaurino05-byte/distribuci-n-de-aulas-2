@@ -81,32 +81,28 @@
   .qui{background:#facc15;color:#111}
   .content{
     flex:1;
-    padding:clamp(10px, 1vw, 18px) clamp(12px, 1.6vw, 24px);
+    padding:18px 24px;
     min-height:0;
   }
   .grid{
     display:grid;
     grid-template-columns:repeat(4, minmax(0,1fr));
-    grid-template-rows:repeat(2, minmax(0,1fr));
-    gap:clamp(10px, 1vw, 20px);
-    align-items:stretch;
-    align-content:stretch;
-    height:100%;
+    gap:20px;
+    align-items:start;
   }
   .card{
     background:#f6f7fb;
     color:#111;
-    border-radius:clamp(16px, 1.2vw, 22px);
-    padding:clamp(12px, 1vw, 18px);
-    min-height:0;
-    height:100%;
+    border-radius:22px;
+    padding:18px;
+    min-height:252px;
+    height:252px;
     display:flex;
     flex-direction:column;
     justify-content:space-between;
     box-shadow:0 14px 34px rgba(0,0,0,.26);
     border:1px solid rgba(0,0,0,.04);
     animation:fadeInUp .55s ease both;
-    overflow:hidden;
   }
   @keyframes fadeInUp{
     from{opacity:0;transform:translateY(14px) scale(.985);}
@@ -119,20 +115,22 @@
     align-items:flex-start;
   }
   .fac{
-    padding:clamp(7px, .7vw, 9px) clamp(10px, .9vw, 14px);
-    font-size:clamp(11px, .85vw, 14px);
+    padding:9px 14px;
+    font-size:15px;
     border-radius:20px;
+    font-size:14px;
     color:#fff;
     font-weight:800;
     line-height:1.1;
-    max-width:170px;
+    max-width:160px;
     text-align:center;
   }
   .status{
     color:#fff;
-    padding:clamp(7px, .7vw, 9px) clamp(10px, .9vw, 14px);
-    font-size:clamp(11px, .85vw, 14px);
+    padding:9px 14px;
+    font-size:15px;
     border-radius:20px;
+    font-size:14px;
     font-weight:800;
     white-space:nowrap;
   }
@@ -189,9 +187,9 @@
   .card.alert.qui .fac, .card.change.qui .fac{background:#facc15 !important;color:#111 !important;}
 
   h2{
-    font-size:clamp(18px, 1.45vw, 28px);
+    font-size:24px;
     margin-bottom:14px;
-    line-height:1.08;
+    line-height:1.12;
     margin:8px 0 0 0;
     display:-webkit-box;
     -webkit-line-clamp:3;
@@ -207,11 +205,10 @@
     opacity:.98;
   }
   .info{
-    font-size:clamp(13px, 1vw, 18px);
+    font-size:17px;
     display:flex;
     flex-direction:column;
-    gap:clamp(6px, .8vw, 10px);
-    margin-top:auto;
+    gap:10px;
   }
   .info-line{
     display:flex;
@@ -219,16 +216,16 @@
     gap:11px;
   }
   .icon-wrap{
-    width:clamp(16px, 1.15vw, 24px);
-    height:clamp(16px, 1.15vw, 24px);
+    width:24px;
+    height:24px;
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    flex:0 0 clamp(16px, 1.15vw, 24px);
+    flex:0 0 22px;
   }
   .icon-svg{
-    width:clamp(15px, 1.05vw, 22px);
-    height:clamp(15px, 1.05vw, 22px);
+    width:22px;
+    height:22px;
     stroke:currentColor;
     fill:none;
     stroke-width:1.9;
@@ -265,183 +262,32 @@
   }
   .empty-box h2{font-size:36px;color:#fff}
   .empty-box p{color:#d4dbe5;font-size:18px;margin-top:12px}
-
-  /* Horizontal: 4x2 */
-  @media (orientation: landscape){
-    .screen{
-      min-height:100vh;
-      height:100vh;
-    }
-    .content{
-      height:calc(100vh - 165px);
-      overflow:hidden;
-    }
-    .grid{
-      grid-template-columns:repeat(4, minmax(0,1fr));
-      grid-template-rows:repeat(2, minmax(0,1fr));
-    }
-    .card{
-      height:100%;
-    }
-  }
-
-  /* Landscape more compact on shorter screens */
-  @media (orientation: landscape) and (max-height: 820px){
-    .header{
-      padding:10px 14px 8px;
-    }
-    .logo{
-      width:46px;
-      height:46px;
-    }
-    .title{
-      font-size:24px;
-    }
-    .sub{
-      font-size:12px;
-      margin-top:2px;
-    }
-    .clock-time{
-      font-size:17px;
-    }
-    .clock-sub{
-      font-size:10px;
-      margin-top:2px;
-    }
-    .legend{
-      padding:8px 14px 0;
-      gap:6px;
-    }
-    .pill{
-      padding:6px 10px;
-      font-size:11px;
-    }
-    .content{
-      padding:8px 14px;
-      height:calc(100vh - 145px);
-    }
-    .grid{
-      gap:8px;
-    }
-    .card{
-      padding:11px;
-    }
-    h2{
-      font-size:clamp(16px, 1.25vw, 22px);
-      -webkit-line-clamp:2;
-    }
-    .info{
-      font-size:clamp(11px, .9vw, 15px);
-      gap:4px;
-    }
-    .footer{
-      padding:6px 14px;
-      font-size:11px;
-    }
-  }
-
-  /* Vertical: 2x4 */
-  @media (orientation: portrait){
-    body{
-      overflow:auto;
-      cursor:auto;
-    }
-    .screen{
-      min-height:100vh;
-      height:auto;
-    }
-    .header{
-      flex-direction:column;
-      align-items:flex-start;
-      padding:10px 12px 8px;
-    }
-    .clock{
-      text-align:left;
-    }
-    .logo{
-      width:42px;
-      height:42px;
-    }
-    .title{
-      font-size:clamp(20px, 5vw, 30px);
-    }
-    .sub{
-      font-size:clamp(11px, 2.8vw, 16px);
-    }
-    .clock-time{
-      font-size:clamp(16px, 4vw, 22px);
-    }
-    .clock-sub{
-      font-size:clamp(10px, 2.5vw, 13px);
-    }
-    .legend{
-      padding:8px 12px 0;
-      gap:6px;
-    }
-    .pill{
-      padding:6px 10px;
-      font-size:clamp(10px, 2.6vw, 13px);
-    }
-    .content{
-      padding:8px 12px;
-      overflow:auto;
-      height:auto;
-    }
-    .grid{
-      grid-template-columns:repeat(2, minmax(0,1fr));
-      grid-template-rows:repeat(4, minmax(0,1fr));
-      gap:8px;
-      height:auto;
-      min-height:calc(100vh - 190px);
-    }
-    .card{
-      aspect-ratio: 0.95 / 1.55;
-      height:auto;
-      padding:10px;
-    }
-    .top{
-      flex-direction:column;
-      align-items:flex-start;
-      gap:6px;
-    }
-    .fac, .status{
-      max-width:100%;
-      font-size:clamp(10px, 2.5vw, 12px);
-      padding:6px 8px;
-    }
-    h2{
-      font-size:clamp(15px, 4.1vw, 22px);
-      -webkit-line-clamp:3;
-    }
-    .alert-message{
-      font-size:clamp(10px, 2.6vw, 13px);
-    }
-    .info{
-      font-size:clamp(10px, 2.7vw, 14px);
-      gap:4px;
-    }
-    .info-line{
-      gap:5px;
-    }
-    .icon-wrap{
-      width:14px;
-      height:14px;
-      flex:0 0 14px;
-    }
-    .icon-svg{
-      width:13px;
-      height:13px;
-    }
-    .footer{
-      flex-direction:column;
-      align-items:flex-start;
-      gap:4px;
-      padding:6px 12px;
-      font-size:10px;
-    }
-  }
-
 </style>
+
+<style>
+.card h3 {
+  font-size: clamp(16px, 2vw, 28px);
+  line-height: 1.2;
+}
+.card p,
+.card span {
+  font-size: clamp(12px, 1.2vw, 18px);
+}
+.badge {
+  font-size: clamp(10px, 1vw, 14px);
+}
+.header h1 {
+  font-size: clamp(18px, 2.5vw, 36px);
+}
+.header p {
+  font-size: clamp(12px, 1.2vw, 18px);
+}
+.card {
+  padding: clamp(12px, 1.5vw, 24px);
+  border-radius: 16px;
+}
+</style>
+
 </head>
 <body>
 <div class="screen">
@@ -695,8 +541,8 @@ async function refreshDataAndRender(){
 }
 
 refreshDataAndRender();
-setInterval(refreshDataAndRender, 15000);
-setInterval(() => { location.reload(); }, 1000 * 60 * 5);
+setInterval(refreshDataAndRender, 60000);
+setInterval(() => { location.reload(); }, 1000 * 60 * 10);
 setInterval(() => {
   if(pages.length > 1){
     page = (page + 1) % pages.length;
