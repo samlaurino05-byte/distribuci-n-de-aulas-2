@@ -333,7 +333,7 @@
     font-size:clamp(10px, .85vw, 14px);
   }
   h2{
-    font-size:clamp(20px, 2vw, 32px);
+    font-size:clamp(22px, 2.2vw, 34px);
     line-height:1.1;
     margin:clamp(8px, .8vw, 14px) 0 0 0;
   }
@@ -343,7 +343,7 @@
     line-height:1.18;
   }
   .info{
-    font-size:clamp(13px, 1.2vw, 20px);
+    font-size:clamp(11px, .98vw, 17px);
     gap:clamp(5px, .65vw, 10px);
   }
   .info-line{
@@ -529,12 +529,6 @@
       padding:6px 12px;
       font-size:10px;
     }
-  }
-
-
-  .card h2,
-  .card .info{
-    transition: font-size .18s ease;
   }
 
 </style>
@@ -766,62 +760,6 @@ function createCard(item){
     </div>`;
 }
 
-
-function autoFitCard(card){
-  const title = card.querySelector('h2');
-  const info = card.querySelector('.info');
-  if(!title || !info) return;
-
-  // Reset to stylesheet values first
-  title.style.fontSize = '';
-  info.style.fontSize = '';
-
-  const fitElement = (el, minPx, maxPx) => {
-    let low = minPx;
-    let high = maxPx;
-    let best = minPx;
-
-    const originalLineClamp = getComputedStyle(el).webkitLineClamp;
-    el.style.wordBreak = 'break-word';
-
-    for(let i = 0; i < 10; i++){
-      const mid = (low + high) / 2;
-      el.style.fontSize = mid + 'px';
-
-      const parent = el.closest('.card');
-      const overflows = parent.scrollHeight > parent.clientHeight || parent.scrollWidth > parent.clientWidth;
-
-      if(overflows){
-        high = mid - 0.5;
-      } else {
-        best = mid;
-        low = mid + 0.5;
-      }
-    }
-
-    el.style.fontSize = best + 'px';
-  };
-
-  // Fit title first, then info
-  fitElement(title, 16, 34);
-  fitElement(info, 11, 22);
-
-  // Final safety pass: if card still overflows, shrink both together a bit
-  let safety = 0;
-  while ((card.scrollHeight > card.clientHeight || card.scrollWidth > card.clientWidth) && safety < 8){
-    const t = parseFloat(getComputedStyle(title).fontSize);
-    const i = parseFloat(getComputedStyle(info).fontSize);
-    title.style.fontSize = Math.max(16, t - 1) + 'px';
-    info.style.fontSize = Math.max(11, i - 0.7) + 'px';
-    safety++;
-  }
-}
-
-function autoFitAllCards(){
-  document.querySelectorAll('.card').forEach(autoFitCard);
-}
-
-
 function render(){
   const visible = getVisible();
   pages = chunk(visible, 8);
@@ -834,10 +772,6 @@ function render(){
     content.innerHTML = `<div class="grid">${current.map(createCard).join('')}</div>`;
   }
   footerCount.textContent = `${visible.length} materias en este momento`;
-  requestAnimationFrame(() => {
-    autoFitAllCards();
-    setTimeout(autoFitAllCards, 80);
-  });
 }
 
 async function refreshDataAndRender(){
@@ -864,14 +798,6 @@ document.addEventListener('click', () => {
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen().catch(() => {});
   }
-});
-
-window.addEventListener('resize', () => {
-  autoFitAllCards();
-});
-
-window.addEventListener('orientationchange', () => {
-  setTimeout(autoFitAllCards, 150);
 });
 </script>
 </body>
