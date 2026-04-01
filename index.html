@@ -531,6 +531,12 @@
     }
   }
 
+
+  .card h2,
+  .card .info{
+    transition: font-size .18s ease;
+  }
+
 </style>
 </head>
 <body>
@@ -760,6 +766,62 @@ function createCard(item){
     </div>`;
 }
 
+
+function autoFitCard(card){
+  const title = card.querySelector('h2');
+  const info = card.querySelector('.info');
+  if(!title || !info) return;
+
+  // Reset to stylesheet values first
+  title.style.fontSize = '';
+  info.style.fontSize = '';
+
+  const fitElement = (el, minPx, maxPx) => {
+    let low = minPx;
+    let high = maxPx;
+    let best = minPx;
+
+    const originalLineClamp = getComputedStyle(el).webkitLineClamp;
+    el.style.wordBreak = 'break-word';
+
+    for(let i = 0; i < 10; i++){
+      const mid = (low + high) / 2;
+      el.style.fontSize = mid + 'px';
+
+      const parent = el.closest('.card');
+      const overflows = parent.scrollHeight > parent.clientHeight || parent.scrollWidth > parent.clientWidth;
+
+      if(overflows){
+        high = mid - 0.5;
+      } else {
+        best = mid;
+        low = mid + 0.5;
+      }
+    }
+
+    el.style.fontSize = best + 'px';
+  };
+
+  // Fit title first, then info
+  fitElement(title, 16, 34);
+  fitElement(info, 11, 22);
+
+  // Final safety pass: if card still overflows, shrink both together a bit
+  let safety = 0;
+  while ((card.scrollHeight > card.clientHeight || card.scrollWidth > card.clientWidth) && safety < 8){
+    const t = parseFloat(getComputedStyle(title).fontSize);
+    const i = parseFloat(getComputedStyle(info).fontSize);
+    title.style.fontSize = Math.max(16, t - 1) + 'px';
+    info.style.fontSize = Math.max(11, i - 0.7) + 'px';
+    safety++;
+  }
+}
+
+function autoFitAllCards(){
+  document.querySelectorAll('.card').forEach(autoFitCard);
+}
+
+
 function render(){
   const visible = getVisible();
   pages = chunk(visible, 8);
@@ -772,6 +834,10 @@ function render(){
     content.innerHTML = `<div class="grid">${current.map(createCard).join('')}</div>`;
   }
   footerCount.textContent = `${visible.length} materias en este momento`;
+  requestAnimationFrame(() => {
+    autoFitAllCards();
+    setTimeout(autoFitAllCards, 80);
+  });
 }
 
 async function refreshDataAndRender(){
@@ -798,6 +864,14 @@ document.addEventListener('click', () => {
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen().catch(() => {});
   }
+});
+
+window.addEventListener('resize', () => {
+  autoFitAllCards();
+});
+
+window.addEventListener('orientationchange', () => {
+  setTimeout(autoFitAllCards, 150);
 });
 </script>
 </body>
