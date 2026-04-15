@@ -12,7 +12,7 @@
     background:#000;
     color:#fff;
     overflow:hidden;
-    cursor:none;
+    cursor:auto;
   }
   .screen{
     width:100vw;
@@ -74,6 +74,22 @@
     border-radius:20px;
     font-size:14px;
     font-weight:800;
+    border:none;
+    transition:transform .18s ease, opacity .18s ease, box-shadow .18s ease, filter .18s ease;
+  }
+  .pill.filterable{
+    cursor:pointer !important;
+  }
+  .pill.filterable:hover{
+    transform:translateY(-1px);
+    filter:brightness(1.04);
+  }
+  .pill.filterable.active{
+    box-shadow:0 0 0 2px rgba(255,255,255,.9), 0 0 0 5px rgba(255,255,255,.18);
+  }
+  .pill.all-pill{
+    background:rgba(255,255,255,.12);
+    color:#fff;
   }
   .eco{background:#f97316;color:#fff}
   .der{background:#7c3aed;color:#fff}
@@ -263,7 +279,6 @@
   .empty-box h2{font-size:36px;color:#fff}
   .empty-box p{color:#d4dbe5;font-size:18px;margin-top:12px}
 
-  /* Ajuste automático proporcional sin tocar lógica ni estructura */
   .header{
     padding:clamp(10px, 1.2vw, 20px) clamp(12px, 1.6vw, 24px) clamp(8px, .9vw, 14px);
     gap:clamp(10px, 1.2vw, 16px);
@@ -550,10 +565,11 @@
   </div>
 
   <div class="legend">
-    <div class="pill eco">Económicas</div>
-    <div class="pill der">Derecho y Cs Sociales</div>
-    <div class="pill sal">Salud</div>
-    <div class="pill qui">Química e Ingeniería</div>
+    <button class="pill all-pill filterable active" data-faculty="all">Todas</button>
+    <button class="pill eco filterable" data-faculty="economicas">Económicas</button>
+    <button class="pill der filterable" data-faculty="derecho">Derecho y Cs Sociales</button>
+    <button class="pill sal filterable" data-faculty="salud">Salud</button>
+    <button class="pill qui filterable" data-faculty="quimica">Química e Ingeniería</button>
   </div>
 
   <div class="content" id="content"></div>
@@ -576,7 +592,7 @@ const facultyLabel = {
   "economicas":"Económicas",
   "derecho":"Derecho y Cs Sociales",
   "salud":"Salud",
-  "quimica":"Química"
+  "quimica":"Química e Ingeniería"
 };
 const facultyClass = {
   "economicas":"eco",
@@ -593,6 +609,7 @@ const clockEl = document.getElementById('clock');
 let data = [];
 let page = 0;
 let pages = [];
+let selectedFaculty = "all";
 
 function parseCSV(text){
   const rows = [];
@@ -650,6 +667,17 @@ function chunk(arr,size){
   return out;
 }
 
+function renderLoading(){
+  content.innerHTML = `
+    <div class="empty">
+      <div class="empty-box">
+        <h2>Cargando materias...</h2>
+        <p>Esperá un segundo...</p>
+      </div>
+    </div>
+  `;
+}
+
 async function loadData(){
   const res = await fetch(SHEET_URL + (SHEET_URL.includes("?") ? "&" : "?") + "_t=" + Date.now(), { cache: "no-store" });
   const text = await res.text();
@@ -696,9 +724,16 @@ async function loadData(){
     });
 }
 
+function setActiveFilterButton(){
+  document.querySelectorAll('.filterable').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.faculty === selectedFaculty);
+  });
+}
+
 function getVisible(){
   const ctx = getNowContext();
-  subtitle.textContent = `${ctx.day.charAt(0).toUpperCase()+ctx.day.slice(1)} · Materias próximas y en curso`;
+  const filtroTexto = selectedFaculty === "all" ? "Todas las facultades" : (facultyLabel[selectedFaculty] || selectedFaculty);
+  subtitle.textContent = `${ctx.day.charAt(0).toUpperCase()+ctx.day.slice(1)} · ${filtroTexto}`;
   clockEl.textContent = ctx.label;
 
   return data
@@ -711,6 +746,7 @@ function getVisible(){
       return { ...item, live, soon, slotStart:slot.start };
     })
     .filter(item => item.live || item.soon)
+    .filter(item => selectedFaculty === "all" ? true : item.facultad === selectedFaculty)
     .sort((a,b) => {
       const order = facultyOrder.indexOf(a.facultad) - facultyOrder.indexOf(b.facultad);
       if(order !== 0) return order;
@@ -766,7 +802,10 @@ function render(){
   if(page >= pages.length) page = 0;
 
   if(!visible.length){
-    content.innerHTML = `<div class="empty"><div class="empty-box"><h2>En este momento no hay materias en curso</h2><p>La pantalla muestra materias 15 minutos antes de su inicio y durante su cursado real.</p></div></div>`;
+    const mensajeFacultad = selectedFaculty === "all"
+      ? "En este momento no hay materias en curso"
+      : `En este momento no hay materias en curso de ${facultyLabel[selectedFaculty] || selectedFaculty}`;
+    content.innerHTML = `<div class="empty"><div class="empty-box"><h2>${mensajeFacultad}</h2><p>La pantalla muestra materias 15 minutos antes de su inicio y durante su cursado real.</p></div></div>`;
   } else {
     const current = pages[page] || [];
     content.innerHTML = `<div class="grid">${current.map(createCard).join('')}</div>`;
@@ -774,9 +813,24 @@ function render(){
   footerCount.textContent = `${visible.length} materias en este momento`;
 }
 
+function bindFacultyFilters(){
+  document.querySelectorAll('.filterable').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedFaculty = btn.dataset.faculty || "all";
+      page = 0;
+      setActiveFilterButton();
+      render();
+    });
+  });
+}
+
 async function refreshDataAndRender(){
   try{
-    data = await loadData();
+    if(!data.length){
+      renderLoading();
+    }
+    const newData = await loadData();
+    data = newData;
     render();
   } catch(error){
     content.innerHTML = `<div class="empty"><div class="empty-box"><h2>Error al cargar la planilla</h2><p>Revisá que la hoja esté publicada como CSV y que los encabezados coincidan con la plantilla.</p></div></div>`;
@@ -784,9 +838,10 @@ async function refreshDataAndRender(){
   }
 }
 
+bindFacultyFilters();
+setActiveFilterButton();
 refreshDataAndRender();
 setInterval(refreshDataAndRender, 60000);
-setInterval(() => { location.reload(); }, 1000 * 60 * 10);
 setInterval(() => {
   if(pages.length > 1){
     page = (page + 1) % pages.length;
