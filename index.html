@@ -278,7 +278,7 @@
     gap:clamp(6px, .8vw, 10px);
     padding:clamp(8px, .9vw, 14px) clamp(12px, 1.6vw, 24px) 0;
   }
-  .pill{padding:clamp(6px, .7vw, 9px) clamp(10px, .95vw, 15px); font-size:clamp(10px, .85vw, 14px);}
+  .pill{padding:clamp(7px, .78vw, 10px) clamp(12px, 1.05vw, 18px); font-size:clamp(11px, .92vw, 15px);}
   .content{flex:1; padding:clamp(10px, 1vw, 18px) clamp(12px, 1.6vw, 24px); min-height:0;}
   .grid{
     display:grid;
@@ -299,7 +299,7 @@
   .top{gap:clamp(6px, .7vw, 10px);}
   .fac{padding:clamp(6px, .6vw, 9px) clamp(9px, .85vw, 14px); font-size:clamp(10px, .85vw, 14px); max-width:min(55%, 180px);}
   .status{padding:clamp(6px, .6vw, 9px) clamp(9px, .85vw, 14px); font-size:clamp(10px, .85vw, 14px);}
-  h2{font-size:clamp(16px, 1.35vw, 24px); line-height:1.1; margin:clamp(8px, .8vw, 14px) 0 0 0;}
+  h2{font-size:clamp(16px, 1.7vw, 30px); line-height:1.1; margin:clamp(8px, .8vw, 14px) 0 0 0;}
   .alert-message{margin-top:clamp(6px, .7vw, 10px); font-size:clamp(11px, .9vw, 15px); line-height:1.18;}
   .info{font-size:clamp(11px, .98vw, 17px); gap:clamp(5px, .65vw, 10px);}
   .info-line{gap:clamp(6px, .65vw, 11px);}
@@ -354,7 +354,7 @@
     .grid{gap:8px;}
     .card{padding:9px;}
     .top{flex-direction:column; align-items:flex-start;}
-    .fac,.status{max-width:100%;}
+    .fac,.status{max-width:100%; padding:3px 8px; font-size:9px;}
     h2{font-size:15px;-webkit-line-clamp:2;}
     .alert-message{font-size:10px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;}
     .info{font-size:10px;gap:4px;}
@@ -634,7 +634,7 @@ function createCard(item){
 
   return `
     <div class="card ${visualClass} ${cardExtraClass}">
-      <div>
+      <div class="card-main">
         <div class="top">
           <div class="fac">${facultyLabel[item.facultad] || item.facultad}</div>
           <div class="status ${badgeClass}">${badgeText}</div>
@@ -648,6 +648,50 @@ function createCard(item){
         <div class="info-line">${timeIcon}<span>${item.horario}</span></div>
       </div>
     </div>`;
+}
+
+function adaptCardTypography(){
+  const largeScreenLayout = window.matchMedia('(orientation: landscape) and (min-width: 1000px)').matches;
+
+  document.querySelectorAll('.card').forEach(card => {
+    const title = card.querySelector('h2');
+    const main = card.querySelector('.card-main');
+    const info = card.querySelector('.info');
+    if(!title || !main || !info) return;
+
+    title.style.removeProperty('font-size');
+    info.style.removeProperty('font-size');
+    if(!largeScreenLayout) return;
+
+    const cardStyles = getComputedStyle(card);
+    const cardInnerHeight =
+      card.clientHeight -
+      parseFloat(cardStyles.paddingTop) -
+      parseFloat(cardStyles.paddingBottom);
+    const availableMainHeight = cardInnerHeight - info.offsetHeight;
+    let low = 16;
+    let high = 36;
+    let best = 26;
+    let bestInfo = 15;
+
+    while(low <= high){
+      const mid = Math.floor((low + high) / 2);
+      const infoSize = Math.max(11, Math.min(18, Math.round(mid * 0.53)));
+      title.style.fontSize = `${mid}px`;
+      info.style.fontSize = `${infoSize}px`;
+
+      if(main.scrollHeight <= availableMainHeight){
+        best = mid;
+        bestInfo = infoSize;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+
+    title.style.fontSize = `${best}px`;
+    info.style.fontSize = `${bestInfo}px`;
+  });
 }
 
 function render(){
@@ -664,6 +708,7 @@ function render(){
     const current = pages[page] || [];
     content.innerHTML = `<div class="grid">${current.map(createCard).join('')}</div>`;
   }
+  requestAnimationFrame(adaptCardTypography);
   footerCount.textContent = `${visible.length} materias en este momento`;
 }
 
@@ -726,6 +771,8 @@ function boot(){
 }
 
 boot();
+
+window.addEventListener('resize', adaptCardTypography);
 
 document.addEventListener('click', () => {
   if (!document.fullscreenElement) {
