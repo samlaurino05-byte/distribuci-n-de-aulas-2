@@ -362,6 +362,42 @@
     .icon-svg{width:13px;height:13px;}
     .footer{padding:6px 12px;font-size:10px;}
   }
+
+  .admin-access{
+    position:fixed;
+    right:18px;
+    bottom:18px;
+    z-index:9999;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:8px 13px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.24);
+    background:rgba(255,255,255,.10);
+    color:#fff;
+    text-decoration:none;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.1px;
+    opacity:.38;
+    backdrop-filter:blur(10px);
+    transition:opacity .18s ease, background .18s ease, transform .18s ease;
+  }
+  .admin-access:hover{
+    opacity:1;
+    background:rgba(255,255,255,.20);
+    transform:translateY(-1px);
+  }
+  @media (max-width:700px){
+    .admin-access{
+      right:12px;
+      bottom:10px;
+      font-size:10px;
+      padding:6px 10px;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -395,6 +431,7 @@
     <div id="footerCount">0 materias en este momento</div>
   </div>
 </div>
+<a class="admin-access" href="admin.html" title="Acceso administrativo">Panel administrativo</a>
 
 <script>
 const rotationMs = 8000;
