@@ -204,6 +204,17 @@
     line-height:1.45;
     margin-top:8px;
   }
+  .quick-info{
+    background:#f8fafc;
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:10px 12px;
+    margin-bottom:12px;
+    color:#334155;
+    font-size:13px;
+    line-height:1.55;
+  }
+  .quick-info b{color:#111827;}
   @media(max-width:800px){
     .topbar{flex-direction:column;}
     .grid{grid-template-columns:1fr;}
@@ -224,12 +235,10 @@
 
     <section id="loginBox" class="box login">
       <h2 style="margin:0 0 4px">Ingresar</h2>
-      <div class="help">Este acceso valida contra Google Apps Script. No pongas claves importantes en el HTML.</div>
-
       <label for="usuario">Usuario</label>
       <input id="usuario" autocomplete="username" >
 
-      <label for="codigo">Código de acceso</label>
+      <label for="codigo">Contraseña</label>
       <input id="codigo" type="password" autocomplete="current-password" >
 
       <div class="btn-row">
@@ -252,6 +261,9 @@
           <div><label>Inicio</label><input id="add_inicio" placeholder="Ej: 07:30"></div>
           <div><label>Fin</label><input id="add_fin" placeholder="Ej: 09:30"></div>
           <div><label>Estado</label><select id="add_estado"><option value="normal">normal</option><option value="suspendida">suspendida</option><option value="cambio_aula">cambio_aula</option><option value="cambio_horario">cambio_horario</option></select></div>
+          <div><label>Duración del cambio</label><select id="add_duracion_cambio"><option value="permanente">Permanente / indeterminado</option><option value="solo_hoy">Solo por hoy</option><option value="fecha_especifica">Solo una fecha específica</option><option value="hasta_fecha">Hasta una fecha determinada</option></select></div>
+          <div><label>Fecha desde</label><input id="add_fecha_desde" type="date"></div>
+          <div><label>Fecha hasta</label><input id="add_fecha_hasta" type="date"></div>
           <div><label>Visible</label><select id="add_visible"><option value="SI">SI</option><option value="NO">NO</option></select></div>
           <div class="full"><label>Mensaje</label><textarea id="add_mensaje" placeholder="Ej: Clase suspendida por única vez / Aula modificada solo por hoy"></textarea></div>
         </div>
@@ -453,11 +465,18 @@
           <span class="tag ${estado}">${estado}</span>
         </div>
 
+        <div class="quick-info">
+          <div><b>Comisión:</b> ${escapeHtml(m.comision || "Sin comisión")}</div>
+          <div><b>Horario:</b> ${escapeHtml(formatHora(m.horario_inicio))} a ${escapeHtml(formatHora(m.horario_fin))}</div>
+          <div><b>Aula:</b> ${escapeHtml(m.aula || "Sin aula")} · <b>Edificio:</b> ${escapeHtml(m.edificio || "Sin edificio")}</div>
+        </div>
+
         <div class="form-grid">
+          <div><label>Comisión</label><input id="comision_${safeId}" value="${escapeHtml(m.comision || "")}"></div>
           <div><label>Aula</label><input id="aula_${safeId}" value="${escapeHtml(m.aula || "")}"></div>
           <div><label>Edificio</label><input id="edificio_${safeId}" value="${escapeHtml(m.edificio || "")}"></div>
-          <div><label>Inicio</label><input id="inicio_${safeId}" value="${escapeHtml(m.horario_inicio || "")}"></div>
-          <div><label>Fin</label><input id="fin_${safeId}" value="${escapeHtml(m.horario_fin || "")}"></div>
+          <div><label>Horario de inicio de la clase</label><input id="inicio_${safeId}" value="${escapeHtml(formatHora(m.horario_inicio))}" placeholder="Ej: 07:30"></div>
+          <div><label>Horario de fin de la clase</label><input id="fin_${safeId}" value="${escapeHtml(formatHora(m.horario_fin))}" placeholder="Ej: 09:30"></div>
           <div><label>Estado</label>
             <select id="estado_${safeId}">
               ${option("normal", estado)}
@@ -466,6 +485,16 @@
               ${option("cambio_horario", estado)}
             </select>
           </div>
+          <div><label>Duración del cambio</label>
+            <select id="duracion_${safeId}">
+              ${option("permanente", m.duracion_cambio || "permanente", "Permanente / indeterminado")}
+              ${option("solo_hoy", m.duracion_cambio, "Solo por hoy")}
+              ${option("fecha_especifica", m.duracion_cambio, "Solo una fecha específica")}
+              ${option("hasta_fecha", m.duracion_cambio, "Hasta una fecha determinada")}
+            </select>
+          </div>
+          <div><label>Fecha desde</label><input id="fecha_desde_${safeId}" type="date" value="${escapeHtml(toDateInput(m.fecha_desde || m.fecha_inicio || ""))}"></div>
+          <div><label>Fecha hasta</label><input id="fecha_hasta_${safeId}" type="date" value="${escapeHtml(toDateInput(m.fecha_hasta || m.fecha_fin || ""))}"></div>
           <div><label>Visible</label>
             <select id="visible_${safeId}">
               ${option("SI", m.visible)}
@@ -484,9 +513,38 @@
     `;
   }
 
-  function option(value, current){
+  function option(value, current, label){
     const selected = String(value).toLowerCase() === String(current || "").toLowerCase() ? "selected" : "";
-    return `<option value="${value}" ${selected}>${value}</option>`;
+    return `<option value="${value}" ${selected}>${label || value}</option>`;
+  }
+
+  function formatHora(value){
+    const raw = String(value || "").trim();
+    if(!raw) return "";
+
+    const hhmm = raw.match(/(\d{1,2}):(\d{2})/);
+    if(hhmm){
+      return `${hhmm[1].padStart(2,"0")}:${hhmm[2]}`;
+    }
+
+    const parsed = new Date(raw);
+    if(!Number.isNaN(parsed.getTime())){
+      return `${String(parsed.getHours()).padStart(2,"0")}:${String(parsed.getMinutes()).padStart(2,"0")}`;
+    }
+
+    return raw;
+  }
+
+  function toDateInput(value){
+    const raw = String(value || "").trim();
+    if(!raw) return "";
+    const iso = raw.match(/\d{4}-\d{2}-\d{2}/);
+    if(iso) return iso[0];
+    const parsed = new Date(raw);
+    if(!Number.isNaN(parsed.getTime())){
+      return `${parsed.getFullYear()}-${String(parsed.getMonth()+1).padStart(2,"0")}-${String(parsed.getDate()).padStart(2,"0")}`;
+    }
+    return "";
   }
 
   function escapeHtml(str){
@@ -505,11 +563,15 @@
         accion:"actualizar",
         token,
         id,
+        comision: document.getElementById(`comision_${id}`).value,
         aula: document.getElementById(`aula_${id}`).value,
         edificio: document.getElementById(`edificio_${id}`).value,
         horario_inicio: document.getElementById(`inicio_${id}`).value,
         horario_fin: document.getElementById(`fin_${id}`).value,
         estado: document.getElementById(`estado_${id}`).value,
+        duracion_cambio: document.getElementById(`duracion_${id}`).value,
+        fecha_desde: document.getElementById(`fecha_desde_${id}`).value,
+        fecha_hasta: document.getElementById(`fecha_hasta_${id}`).value,
         mensaje: document.getElementById(`mensaje_${id}`).value,
         visible: document.getElementById(`visible_${id}`).value
       };
@@ -524,6 +586,9 @@
 
   async function resetNormal(id){
     document.getElementById(`estado_${id}`).value = "normal";
+    document.getElementById(`duracion_${id}`).value = "permanente";
+    document.getElementById(`fecha_desde_${id}`).value = "";
+    document.getElementById(`fecha_hasta_${id}`).value = "";
     document.getElementById(`mensaje_${id}`).value = "";
     await guardar(id);
   }
@@ -561,6 +626,9 @@
         aula: document.getElementById("add_aula").value.trim(),
         edificio: document.getElementById("add_edificio").value.trim(),
         estado: document.getElementById("add_estado").value,
+        duracion_cambio: document.getElementById("add_duracion_cambio").value,
+        fecha_desde: document.getElementById("add_fecha_desde").value,
+        fecha_hasta: document.getElementById("add_fecha_hasta").value,
         mensaje: document.getElementById("add_mensaje").value.trim(),
         visible: document.getElementById("add_visible").value
       };
