@@ -387,23 +387,14 @@
   background:rgba(255,255,255,.22);
   transform:translateY(-1px);
 }
-@media (orientation: portrait), (max-width:700px){
-  
-    top:62px;
-    right:12px;
-    padding:5px 9px;
-    font-size:9px;
-    opacity:.32;
-  }
-}
-@media (orientation: portrait) and (max-width:700px){
+
+/* Mobile / vertical: ocultar botón admin para que no tape filtros */
+@media (orientation: portrait), (max-width: 768px){
   .admin-access{
-    top:58px;
-    right:12px;
-    padding:4px 8px;
-    font-size:8.5px;
+    display:none !important;
   }
 }
+
 @media (max-height:820px) and (orientation:landscape){
   .admin-access{
     top:58px;
@@ -412,7 +403,6 @@
     font-size:9px;
   }
 }
-
 
 </style>
 </head>
@@ -824,6 +814,32 @@ function boot(){
 }
 
 boot();
+
+
+// Acceso secreto al panel admin en celular: mantener presionado el logo UCA
+const adminLogo = document.querySelector('.logo');
+let adminPressTimer;
+
+if (adminLogo) {
+  adminLogo.addEventListener('touchstart', () => {
+    adminPressTimer = setTimeout(() => {
+      navigator.vibrate?.(50);
+      window.location.href = 'admin.html';
+    }, 1200);
+  }, { passive: true });
+
+  adminLogo.addEventListener('touchend', () => {
+    clearTimeout(adminPressTimer);
+  });
+
+  adminLogo.addEventListener('touchmove', () => {
+    clearTimeout(adminPressTimer);
+  });
+
+  adminLogo.addEventListener('touchcancel', () => {
+    clearTimeout(adminPressTimer);
+  });
+}
 
 window.addEventListener('resize', adaptCardTypography);
 
