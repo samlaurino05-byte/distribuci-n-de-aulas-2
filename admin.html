@@ -1,322 +1,461 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel Administrativo</title>
-<style>
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Arial, Helvetica, sans-serif;
-  background:#0a2448;
-  color:#fff;
-}
-.login{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-}
-.login-box{
-  width:min(380px,100%);
-  background:#fff;
-  color:#111;
-  border-radius:18px;
-  padding:26px;
-  box-shadow:0 20px 60px rgba(0,0,0,.28);
-}
-h1,h2,h3{margin-top:0}
-input,select,textarea,button{
-  width:100%;
-  padding:11px 12px;
-  margin-top:9px;
-  border-radius:10px;
-  border:1px solid #d1d5db;
-  font-size:14px;
-}
-button{
-  border:none;
-  background:#0a2448;
-  color:#fff;
-  font-weight:800;
-  cursor:pointer;
-}
-button.secondary{background:#64748b}
-button.danger{background:#dc2626}
-button.ok{background:#16a34a}
-.panel{display:none;padding:20px}
-.topbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:14px;
-  margin-bottom:18px;
-}
-.search{
-  display:grid;
-  grid-template-columns:1fr auto;
-  gap:10px;
-  margin-bottom:16px;
-}
-.cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
-  gap:14px;
-}
-.card{
-  background:#fff;
-  color:#111;
-  border-radius:16px;
-  padding:16px;
-  box-shadow:0 8px 24px rgba(0,0,0,.18);
-}
-.meta{
-  color:#475569;
-  font-size:13px;
-  line-height:1.45;
-  margin:8px 0 12px;
-}
-.status{
-  display:inline-block;
-  padding:5px 9px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:800;
-  background:#e5e7eb;
-}
-.status.suspendida,.status.cambio_aula,.status.cambio_horario{background:#fee2e2;color:#991b1b}
-.msg{
-  margin:10px 0;
-  padding:10px 12px;
-  border-radius:12px;
-  background:#e0f2fe;
-  color:#075985;
-  white-space:pre-wrap;
-  font-size:13px;
-}
-.error{
-  margin-top:12px;
-  padding:12px;
-  border-radius:12px;
-  background:#fee2e2;
-  color:#991b1b;
-  white-space:pre-wrap;
-  font-size:13px;
-}
-.success{
-  margin-top:12px;
-  padding:12px;
-  border-radius:12px;
-  background:#dcfce7;
-  color:#166534;
-  white-space:pre-wrap;
-  font-size:13px;
-}
-.loading{
-  padding:18px;
-  background:rgba(255,255,255,.1);
-  border-radius:14px;
-}
-.small{font-size:12px;color:#64748b}
-.actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
-@media(max-width:700px){
-  .panel{padding:12px}
-  .topbar{flex-direction:column;align-items:stretch}
-  .search{grid-template-columns:1fr}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Administrador - Materias</title>
+  <style>
+    :root{
+      --bg:#0f172a;
+      --card:#ffffff;
+      --muted:#64748b;
+      --border:#e2e8f0;
+      --text:#0f172a;
+      --accent:#2563eb;
+      --danger:#dc2626;
+      --warn:#d97706;
+      --ok:#059669;
+      --shadow:0 12px 30px rgba(15,23,42,.12);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+      background:linear-gradient(135deg,#e0ecff 0%,#f8fafc 40%,#e8fff5 100%);
+      color:var(--text);
+    }
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
+    .hero{
+      background:rgba(15,23,42,.92);
+      color:#fff;
+      border-radius:26px;
+      padding:28px;
+      box-shadow:var(--shadow);
+      margin-bottom:20px;
+    }
+    .hero h1{margin:0 0 8px;font-size:clamp(28px,4vw,40px)}
+    .hero p{margin:0;color:#cbd5e1;font-size:16px;line-height:1.5}
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:20px}
+    .card{
+      background:var(--card);
+      border:1px solid rgba(226,232,240,.9);
+      border-radius:var(--radius);
+      padding:22px;
+      box-shadow:var(--shadow);
+    }
+    .card h2{margin:0 0 6px;font-size:22px}
+    .sub{margin:0 0 18px;color:var(--muted);font-size:14px;line-height:1.45}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .form-grid.single{grid-template-columns:1fr}
+    .field{display:flex;flex-direction:column;gap:7px}
+    .field label{font-size:13px;font-weight:700;color:#334155}
+    input,select,textarea{
+      width:100%;padding:13px 14px;border:1px solid var(--border);border-radius:12px;
+      font:inherit;background:#fff;outline:none;transition:.18s ease;
+    }
+    input:focus,select:focus,textarea:focus{border-color:#93c5fd;box-shadow:0 0 0 4px rgba(37,99,235,.1)}
+    textarea{min-height:94px;resize:vertical}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    button{
+      border:none;border-radius:12px;padding:12px 16px;font-weight:700;font-size:14px;cursor:pointer;
+      transition:transform .08s ease, opacity .2s ease, box-shadow .2s ease;
+    }
+    button:hover{transform:translateY(-1px)}
+    .primary{background:var(--accent);color:#fff}
+    .danger{background:var(--danger);color:#fff}
+    .warn{background:var(--warn);color:#fff}
+    .ok{background:var(--ok);color:#fff}
+    .ghost{background:#e2e8f0;color:#0f172a}
+    .hint{
+      margin-top:12px;padding:12px 14px;border-radius:12px;background:#f8fafc;border:1px dashed #cbd5e1;
+      color:#475569;font-size:13px;line-height:1.45;
+    }
+    .status-box{
+      margin-top:16px;padding:14px;border-radius:14px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;
+      font-size:14px;display:none;
+    }
+    .status-box.show{display:block}
+    .table-wrap{overflow:auto;border:1px solid var(--border);border-radius:16px}
+    table{width:100%;border-collapse:collapse;background:#fff}
+    th,td{padding:12px 10px;border-bottom:1px solid #edf2f7;text-align:left;font-size:14px;vertical-align:top}
+    th{background:#f8fafc;color:#334155;position:sticky;top:0}
+    tr:hover td{background:#fafcff}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px}
+    .b-normal{background:#ecfeff;color:#155e75}
+    .b-aula{background:#eff6ff;color:#1d4ed8}
+    .b-horario{background:#fff7ed;color:#c2410c}
+    .b-suspendida{background:#fef2f2;color:#b91c1c}
+    .inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .muted{color:var(--muted)}
+    .small{font-size:12px}
+    .full{grid-column:1 / -1}
+    @media (max-width:960px){.grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}}
+  </style>
 </head>
 <body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Panel del administrador</h1>
+      <p>Desde acá podés cambiar el estado de una materia, modificar aula u horario, suspender clases, agregar materias nuevas o eliminarlas. La búsqueda de la materia usa: <strong>nombre + comisión + horario + día</strong>.</p>
+    </section>
 
-<div class="login" id="login">
-  <div class="login-box">
-    <h2>Panel administrativo</h2>
-    <input id="user" autocomplete="username" placeholder="Usuario">
-    <input id="pass" type="password" autocomplete="current-password" placeholder="Contraseña">
-    <button onclick="login()">Ingresar</button>
-    <div id="loginMsg"></div>
-  </div>
-</div>
+    <div class="grid">
+      <section class="card">
+        <h2>1) Buscar materia a modificar</h2>
+        <p class="sub">Completá los 4 datos para encontrar exactamente la fila correcta del Excel / Google Sheet.</p>
 
-<div class="panel" id="panel">
-  <div class="topbar">
-    <div>
-      <h1>Materias cargadas</h1>
-      <div id="count" class="small">Cargando...</div>
+        <div class="form-grid">
+          <div class="field">
+            <label for="buscarMateria">Nombre de la materia</label>
+            <input id="buscarMateria" placeholder="Ej: Microeconomía" />
+          </div>
+          <div class="field">
+            <label for="buscarComision">Comisión</label>
+            <input id="buscarComision" placeholder="Ej: 1A" />
+          </div>
+          <div class="field">
+            <label for="buscarHorario">Horario</label>
+            <input id="buscarHorario" placeholder="Ej: 09:40-11:40" />
+          </div>
+          <div class="field">
+            <label for="buscarDia">Día</label>
+            <select id="buscarDia">
+              <option value="">Seleccionar día</option>
+              <option>Lunes</option>
+              <option>Martes</option>
+              <option>Miércoles</option>
+              <option>Jueves</option>
+              <option>Viernes</option>
+              <option>Sábado</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="primary" onclick="buscarMateria()">Buscar materia</button>
+          <button class="ghost" onclick="limpiarBusqueda()">Limpiar</button>
+        </div>
+
+        <div class="hint">
+          El backend tiene que comparar estos 4 campos contra tu hoja. Si encuentra coincidencia, devuelve la fila y recién ahí permite editarla. Así evitás tocar una materia equivocada. Cero caos, full control.
+        </div>
+
+        <div id="resultadoBusqueda" class="status-box"></div>
+      </section>
+
+      <section class="card">
+        <h2>2) Aplicar cambio a la materia</h2>
+        <p class="sub">Una vez encontrada la materia, elegís qué querés hacer.</p>
+
+        <div class="form-grid single">
+          <div class="field">
+            <label for="tipoCambio">Tipo de cambio</label>
+            <select id="tipoCambio" onchange="actualizarFormularioCambio()">
+              <option value="">Seleccionar cambio</option>
+              <option value="normal">Volver a normal</option>
+              <option value="cambio_aula">Cambio de aula</option>
+              <option value="cambio_horario">Cambio de horario</option>
+              <option value="suspendida">Suspensión de clase</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="camposCambio" class="form-grid" style="margin-top:14px"></div>
+
+        <div class="actions">
+          <button class="warn" onclick="guardarCambio()">Guardar cambio</button>
+        </div>
+
+        <div class="hint">
+          Recomendación de columnas extra en la hoja: <strong>estado</strong>, <strong>aula_nueva</strong>, <strong>horario_nuevo</strong>, <strong>detalle_cambio</strong> y <strong>visible</strong>. Eso te deja la pantalla pública mucho más prolija.
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>3) Agregar materia nueva</h2>
+        <p class="sub">Esto inserta una nueva fila en la hoja con todos los datos necesarios.</p>
+
+        <div class="form-grid">
+          <div class="field"><label for="nuevaFacultad">Facultad</label><input id="nuevaFacultad" placeholder="Ej: Económicas" /></div>
+          <div class="field"><label for="nuevaMateria">Materia</label><input id="nuevaMateria" placeholder="Ej: Contabilidad" /></div>
+          <div class="field"><label for="nuevaComision">Comisión</label><input id="nuevaComision" placeholder="Ej: 2B" /></div>
+          <div class="field"><label for="nuevoDia">Día</label>
+            <select id="nuevoDia">
+              <option value="">Seleccionar día</option>
+              <option>Lunes</option><option>Martes</option><option>Miércoles</option><option>Jueves</option><option>Viernes</option><option>Sábado</option>
+            </select>
+          </div>
+          <div class="field"><label for="nuevoHorario">Horario</label><input id="nuevoHorario" placeholder="Ej: 14:00-16:00" /></div>
+          <div class="field"><label for="nuevaAula">Aula</label><input id="nuevaAula" placeholder="Ej: 302" /></div>
+          <div class="field"><label for="nuevoProfesor">Profesor (opcional)</label><input id="nuevoProfesor" placeholder="Ej: Pérez" /></div>
+          <div class="field"><label for="nuevoEdificio">Edificio (opcional)</label><input id="nuevoEdificio" placeholder="Ej: Central" /></div>
+        </div>
+
+        <div class="actions">
+          <button class="ok" onclick="agregarMateria()">Agregar materia</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>4) Eliminar materia</h2>
+        <p class="sub">Por seguridad, la eliminación también exige nombre + comisión + horario + día.</p>
+
+        <div class="form-grid">
+          <div class="field"><label for="eliminarMateria">Materia</label><input id="eliminarMateria" placeholder="Ej: Derecho" /></div>
+          <div class="field"><label for="eliminarComision">Comisión</label><input id="eliminarComision" placeholder="Ej: 1C" /></div>
+          <div class="field"><label for="eliminarHorario">Horario</label><input id="eliminarHorario" placeholder="Ej: 11:50-13:50" /></div>
+          <div class="field"><label for="eliminarDia">Día</label>
+            <select id="eliminarDia">
+              <option value="">Seleccionar día</option>
+              <option>Lunes</option><option>Martes</option><option>Miércoles</option><option>Jueves</option><option>Viernes</option><option>Sábado</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="danger" onclick="eliminarMateria()">Eliminar materia</button>
+        </div>
+      </section>
+
+      <section class="card full">
+        <div class="inline" style="justify-content:space-between; margin-bottom:16px;">
+          <div>
+            <h2 style="margin-bottom:6px;">Vista de cambios recientes</h2>
+            <p class="sub" style="margin:0;">Tabla demo. Cuando lo conectes con tu hoja, esto puede mostrar los registros reales.</p>
+          </div>
+          <button class="ghost" onclick="cargarDemo()">Cargar demo</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Facultad</th>
+                <th>Materia</th>
+                <th>Comisión</th>
+                <th>Día</th>
+                <th>Horario</th>
+                <th>Aula</th>
+                <th>Estado</th>
+                <th>Detalle</th>
+              </tr>
+            </thead>
+            <tbody id="tablaCambiosBody">
+              <tr>
+                <td colspan="8" class="muted">Todavía no hay datos cargados.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
-    <button class="secondary" onclick="cargar()">Recargar</button>
   </div>
 
-  <div id="statusBox" class="loading">Esperando datos...</div>
+  <script>
+    // Pegá acá la URL de tu Web App de Apps Script cuando la publiques.
+    const API_URL = "PEGAR_AQUI_URL_DE_APPS_SCRIPT";
 
-  <div class="search">
-    <input id="searchInput" placeholder="Buscar por materia, comisión, día, horario o aula..." oninput="render()">
-    <button onclick="cargar()">Actualizar</button>
-  </div>
+    let materiaSeleccionada = null;
 
-  <div class="cards" id="cards"></div>
-</div>
-
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxDRCtfHNT_PB3SK299zLCfSdQNwQkm7XddSl7Mt4YALjECIrJMzCdGiFnS151ql7ah/exec";
-
-let materias = [];
-
-function setBox(type, text){
-  const box = document.getElementById("statusBox");
-  box.className = type || "loading";
-  box.textContent = text;
-}
-
-function login(){
-  const u = document.getElementById("user").value.trim();
-  const p = document.getElementById("pass").value.trim();
-  const msg = document.getElementById("loginMsg");
-
-  if(u === "admin" && p === "1234"){
-    document.getElementById("login").style.display = "none";
-    document.getElementById("panel").style.display = "block";
-    cargar();
-  } else {
-    msg.className = "error";
-    msg.textContent = "Usuario o contraseña incorrectos. Probá admin / 1234.";
-  }
-}
-
-async function cargar(){
-  setBox("loading", "Cargando materias desde Apps Script...");
-  document.getElementById("cards").innerHTML = "";
-
-  try{
-    const url = API_URL + (API_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
-    const res = await fetch(url, { method:"GET", cache:"no-store" });
-    const text = await res.text();
-
-    if(!res.ok){
-      throw new Error("Apps Script respondió HTTP " + res.status + "\\n\\n" + text.slice(0,500));
+    function showMsg(msg, ok = true) {
+      const box = document.getElementById('resultadoBusqueda');
+      box.className = 'status-box show';
+      box.style.background = ok ? '#ecfdf5' : '#fef2f2';
+      box.style.borderColor = ok ? '#a7f3d0' : '#fecaca';
+      box.style.color = ok ? '#065f46' : '#991b1b';
+      box.innerHTML = msg;
     }
 
-    let data;
-    try{
-      data = JSON.parse(text);
-    }catch(e){
-      throw new Error("La respuesta NO es JSON válido. Respuesta recibida:\\n\\n" + text.slice(0,800));
+    function getBusquedaPayload(prefix='buscar') {
+      const ids = {
+        buscar: ['buscarMateria','buscarComision','buscarHorario','buscarDia'],
+        eliminar: ['eliminarMateria','eliminarComision','eliminarHorario','eliminarDia']
+      };
+      const [materiaId, comisionId, horarioId, diaId] = ids[prefix];
+      return {
+        materia: document.getElementById(materiaId).value.trim(),
+        comision: document.getElementById(comisionId).value.trim(),
+        horario: document.getElementById(horarioId).value.trim(),
+        dia: document.getElementById(diaId).value.trim()
+      };
     }
 
-    if(data && data.ok === false){
-      throw new Error("Apps Script devolvió error:\\n" + (data.error || JSON.stringify(data)));
+    function validarIdentificacion(data) {
+      return data.materia && data.comision && data.horario && data.dia;
     }
 
-    if(!Array.isArray(data)){
-      throw new Error("El panel esperaba una lista de materias, pero recibió esto:\\n\\n" + JSON.stringify(data, null, 2).slice(0,1000));
+    function limpiarBusqueda(){
+      ['buscarMateria','buscarComision','buscarHorario','buscarDia'].forEach(id => document.getElementById(id).value='');
+      materiaSeleccionada = null;
+      document.getElementById('camposCambio').innerHTML = '';
+      document.getElementById('tipoCambio').value = '';
+      showMsg('Búsqueda limpiada.', true);
     }
 
-    materias = data;
-    setBox("success", "Conectado. Se cargaron " + materias.length + " materias.");
-    render();
+    function actualizarFormularioCambio(){
+      const tipo = document.getElementById('tipoCambio').value;
+      const cont = document.getElementById('camposCambio');
+      let html = '';
 
-  }catch(err){
-    materias = [];
-    document.getElementById("count").textContent = "0 materias";
-    document.getElementById("cards").innerHTML = "";
-    setBox("error", "No se pudieron cargar las materias.\\n\\n" + err.message + "\\n\\nRevisá que Apps Script esté implementado como Web App y que la hoja se llame Materias.");
-  }
-}
+      if (tipo === 'cambio_aula') {
+        html = `
+          <div class="field"><label>Nueva aula</label><input id="datoNuevaAula" placeholder="Ej: 205" /></div>
+          <div class="field"><label>Detalle del cambio</label><input id="detalleCambio" placeholder="Ej: Se traslada por mantenimiento" /></div>
+        `;
+      } else if (tipo === 'cambio_horario') {
+        html = `
+          <div class="field"><label>Nuevo horario</label><input id="datoNuevoHorario" placeholder="Ej: 16:00-18:00" /></div>
+          <div class="field"><label>Detalle del cambio</label><input id="detalleCambio" placeholder="Ej: Reprogramada por acto institucional" /></div>
+        `;
+      } else if (tipo === 'suspendida') {
+        html = `
+          <div class="field full"><label>Motivo de suspensión</label><textarea id="detalleCambio" placeholder="Ej: Suspendida por falta del docente"></textarea></div>
+        `;
+      } else if (tipo === 'normal') {
+        html = `
+          <div class="field full"><label>Detalle</label><input id="detalleCambio" placeholder="Ej: Materia normalizada" /></div>
+        `;
+      }
 
-function render(){
-  const q = (document.getElementById("searchInput").value || "").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
-  const list = materias.filter(m => {
-    const txt = [
-      m.materia, m.comision, m.dia, m.horario_inicio, m.horario_fin,
-      m.aula, m.edificio, m.facultad, m.estado, m.mensaje
-    ].join(" ").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
-    return txt.includes(q);
-  });
-
-  document.getElementById("count").textContent = list.length + " materias visibles de " + materias.length + " cargadas";
-
-  document.getElementById("cards").innerHTML = list.map(m => `
-    <div class="card">
-      <h3>${esc(m.materia || "Sin materia")}</h3>
-      <span class="status ${esc(m.estado || "normal")}">${esc(m.estado || "normal")}</span>
-      <div class="meta">
-        <b>Comisión:</b> ${esc(m.comision || "-")}<br>
-        <b>Día:</b> ${esc(m.dia || "-")}<br>
-        <b>Horario:</b> ${esc(m.horario_inicio || "-")} - ${esc(m.horario_fin || "-")}<br>
-        <b>Aula:</b> ${esc(m.aula || "-")} ${m.edificio ? "· " + esc(m.edificio) : ""}<br>
-        <b>Facultad:</b> ${esc(m.facultad || "-")}
-      </div>
-
-      <input placeholder="Nueva aula" id="aula_${escAttr(m.id)}">
-
-      <div class="actions">
-        <button onclick="cambiarAula('${escAttr(m.id)}')">Cambiar aula</button>
-        <button class="danger" onclick="suspender('${escAttr(m.id)}')">Suspender</button>
-        <button class="ok" onclick="normalizar('${escAttr(m.id)}')">Normalizar</button>
-      </div>
-
-      ${m.mensaje ? `<div class="msg">${esc(m.mensaje)}</div>` : ""}
-    </div>
-  `).join("");
-}
-
-async function postAction(payload){
-  try{
-    setBox("loading", "Guardando cambio...");
-    const res = await fetch(API_URL, {
-      method:"POST",
-      body: JSON.stringify(payload)
-    });
-    const text = await res.text();
-
-    let data;
-    try{ data = JSON.parse(text); }
-    catch(e){ throw new Error("Respuesta no JSON:\\n" + text.slice(0,800)); }
-
-    if(!data.ok){
-      throw new Error(data.error || JSON.stringify(data));
+      cont.innerHTML = html;
     }
 
-    setBox("success", data.message || "Cambio guardado.");
-    await cargar();
+    async function callApi(payload) {
+      if (!API_URL || API_URL.includes('PEGAR_AQUI')) {
+        console.warn('API_URL sin configurar. Se ejecuta en modo demo.', payload);
+        return { ok:true, demo:true, data:payload };
+      }
 
-  }catch(err){
-    setBox("error", "No se pudo guardar el cambio:\\n\\n" + err.message);
-  }
-}
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      return await res.json();
+    }
 
-function cambiarAula(id){
-  const aula = document.getElementById("aula_" + CSS.escape(id)).value.trim();
-  if(!aula){
-    setBox("error", "Escribí el aula nueva antes de guardar.");
-    return;
-  }
-  postAction({ accion:"cambio_aula", id, aula });
-}
+    async function buscarMateria(){
+      const payload = getBusquedaPayload('buscar');
+      if (!validarIdentificacion(payload)) {
+        showMsg('Tenés que completar materia, comisión, horario y día.', false);
+        return;
+      }
 
-function suspender(id){
-  postAction({ accion:"suspension", id });
-}
+      try {
+        const result = await callApi({ action:'buscar_materia', ...payload });
+        materiaSeleccionada = payload;
+        showMsg(`Materia localizada: <strong>${payload.materia}</strong> | Comisión <strong>${payload.comision}</strong> | ${payload.dia} | ${payload.horario}`);
+      } catch (error) {
+        showMsg('No se pudo buscar la materia.', false);
+      }
+    }
 
-function normalizar(id){
-  postAction({ accion:"normalizar", id });
-}
+    async function guardarCambio(){
+      if (!materiaSeleccionada) {
+        showMsg('Primero buscá la materia que querés modificar.', false);
+        return;
+      }
+      const tipo = document.getElementById('tipoCambio').value;
+      if (!tipo) {
+        showMsg('Elegí un tipo de cambio.', false);
+        return;
+      }
 
-function esc(v){
-  return String(v ?? "").replace(/[&<>"']/g, s => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;","'":"&#039;"
-  }[s]));
-}
+      const payload = { action:'actualizar_estado', ...materiaSeleccionada, estado: tipo, detalle_cambio: document.getElementById('detalleCambio')?.value?.trim() || '' };
+      if (tipo === 'cambio_aula') payload.aula_nueva = document.getElementById('datoNuevaAula')?.value?.trim() || '';
+      if (tipo === 'cambio_horario') payload.horario_nuevo = document.getElementById('datoNuevoHorario')?.value?.trim() || '';
 
-function escAttr(v){
-  return String(v ?? "").replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/"/g,"&quot;");
-}
-</script>
+      try {
+        await callApi(payload);
+        showMsg('Cambio guardado correctamente. La pantalla pública ya podría reflejarlo si usa estas columnas.', true);
+      } catch (error) {
+        showMsg('No se pudo guardar el cambio.', false);
+      }
+    }
+
+    async function agregarMateria(){
+      const payload = {
+        action:'agregar_materia',
+        facultad: document.getElementById('nuevaFacultad').value.trim(),
+        materia: document.getElementById('nuevaMateria').value.trim(),
+        comision: document.getElementById('nuevaComision').value.trim(),
+        dia: document.getElementById('nuevoDia').value.trim(),
+        horario: document.getElementById('nuevoHorario').value.trim(),
+        aula: document.getElementById('nuevaAula').value.trim(),
+        profesor: document.getElementById('nuevoProfesor').value.trim(),
+        edificio: document.getElementById('nuevoEdificio').value.trim()
+      };
+
+      if (!payload.facultad || !payload.materia || !payload.comision || !payload.dia || !payload.horario || !payload.aula) {
+        showMsg('Para agregar una materia completá al menos facultad, materia, comisión, día, horario y aula.', false);
+        return;
+      }
+
+      try {
+        await callApi(payload);
+        showMsg(`Materia <strong>${payload.materia}</strong> agregada correctamente.`, true);
+      } catch (error) {
+        showMsg('No se pudo agregar la materia.', false);
+      }
+    }
+
+    async function eliminarMateria(){
+      const payload = getBusquedaPayload('eliminar');
+      if (!validarIdentificacion(payload)) {
+        showMsg('Para eliminar, completá materia, comisión, horario y día.', false);
+        return;
+      }
+
+      const confirmado = confirm(`¿Seguro que querés eliminar ${payload.materia} - comisión ${payload.comision}?`);
+      if (!confirmado) return;
+
+      try {
+        await callApi({ action:'eliminar_materia', ...payload });
+        showMsg(`Materia <strong>${payload.materia}</strong> eliminada correctamente.`, true);
+      } catch (error) {
+        showMsg('No se pudo eliminar la materia.', false);
+      }
+    }
+
+    function badgeClass(estado){
+      if (estado === 'cambio_aula') return 'b-aula';
+      if (estado === 'cambio_horario') return 'b-horario';
+      if (estado === 'suspendida') return 'b-suspendida';
+      return 'b-normal';
+    }
+
+    function badgeText(estado){
+      const map = {
+        normal:'Normal',
+        cambio_aula:'Cambio de aula',
+        cambio_horario:'Cambio de horario',
+        suspendida:'Suspendida'
+      };
+      return map[estado] || estado;
+    }
+
+    function cargarDemo(){
+      const data = [
+        { facultad:'Económicas', materia:'Microeconomía', comision:'1A', dia:'Martes', horario:'14:00-16:00', aula:'205', estado:'cambio_aula', detalle:'Pasa al aula 310' },
+        { facultad:'Derecho', materia:'Derecho Civil', comision:'2C', dia:'Jueves', horario:'11:50-13:50', aula:'101', estado:'suspendida', detalle:'Suspendida por ausencia docente' },
+        { facultad:'Salud', materia:'Anatomía', comision:'1B', dia:'Miércoles', horario:'09:40-11:40', aula:'Lab 2', estado:'cambio_horario', detalle:'Reprogramada a 12:00-14:00' }
+      ];
+
+      const tbody = document.getElementById('tablaCambiosBody');
+      tbody.innerHTML = data.map(item => `
+        <tr>
+          <td>${item.facultad}</td>
+          <td>${item.materia}</td>
+          <td>${item.comision}</td>
+          <td>${item.dia}</td>
+          <td>${item.horario}</td>
+          <td>${item.aula}</td>
+          <td><span class="badge ${badgeClass(item.estado)}">${badgeText(item.estado)}</span></td>
+          <td>${item.detalle}</td>
+        </tr>
+      `).join('');
+    }
+  </script>
 </body>
 </html>
