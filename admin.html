@@ -3,84 +3,320 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel Admin</title>
-
+<title>Panel Administrativo</title>
 <style>
-body{font-family:Arial;margin:0;background:#0a2448;color:white;}
-.login{height:100vh;display:flex;justify-content:center;align-items:center;}
-.login-box{background:white;color:black;padding:30px;border-radius:12px;width:300px;}
-input,button{width:100%;margin-top:10px;padding:10px;}
-button{background:#0a2448;color:white;border:none;cursor:pointer;}
-.panel{display:none;padding:20px;}
-.card{background:white;color:black;padding:15px;border-radius:10px;margin-bottom:10px;}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#0a2448;
+  color:#fff;
+}
+.login{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.login-box{
+  width:min(380px,100%);
+  background:#fff;
+  color:#111;
+  border-radius:18px;
+  padding:26px;
+  box-shadow:0 20px 60px rgba(0,0,0,.28);
+}
+h1,h2,h3{margin-top:0}
+input,select,textarea,button{
+  width:100%;
+  padding:11px 12px;
+  margin-top:9px;
+  border-radius:10px;
+  border:1px solid #d1d5db;
+  font-size:14px;
+}
+button{
+  border:none;
+  background:#0a2448;
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+}
+button.secondary{background:#64748b}
+button.danger{background:#dc2626}
+button.ok{background:#16a34a}
+.panel{display:none;padding:20px}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  margin-bottom:18px;
+}
+.search{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  margin-bottom:16px;
+}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
+  gap:14px;
+}
+.card{
+  background:#fff;
+  color:#111;
+  border-radius:16px;
+  padding:16px;
+  box-shadow:0 8px 24px rgba(0,0,0,.18);
+}
+.meta{
+  color:#475569;
+  font-size:13px;
+  line-height:1.45;
+  margin:8px 0 12px;
+}
+.status{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800;
+  background:#e5e7eb;
+}
+.status.suspendida,.status.cambio_aula,.status.cambio_horario{background:#fee2e2;color:#991b1b}
+.msg{
+  margin:10px 0;
+  padding:10px 12px;
+  border-radius:12px;
+  background:#e0f2fe;
+  color:#075985;
+  white-space:pre-wrap;
+  font-size:13px;
+}
+.error{
+  margin-top:12px;
+  padding:12px;
+  border-radius:12px;
+  background:#fee2e2;
+  color:#991b1b;
+  white-space:pre-wrap;
+  font-size:13px;
+}
+.success{
+  margin-top:12px;
+  padding:12px;
+  border-radius:12px;
+  background:#dcfce7;
+  color:#166534;
+  white-space:pre-wrap;
+  font-size:13px;
+}
+.loading{
+  padding:18px;
+  background:rgba(255,255,255,.1);
+  border-radius:14px;
+}
+.small{font-size:12px;color:#64748b}
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+@media(max-width:700px){
+  .panel{padding:12px}
+  .topbar{flex-direction:column;align-items:stretch}
+  .search{grid-template-columns:1fr}
+}
 </style>
 </head>
-
 <body>
 
 <div class="login" id="login">
   <div class="login-box">
-    <h3>Panel administrativo</h3>
-    <input id="user" placeholder="Usuario">
-    <input id="pass" type="password" placeholder="Contraseña">
+    <h2>Panel administrativo</h2>
+    <input id="user" autocomplete="username" placeholder="Usuario">
+    <input id="pass" type="password" autocomplete="current-password" placeholder="Contraseña">
     <button onclick="login()">Ingresar</button>
+    <div id="loginMsg"></div>
   </div>
 </div>
 
-<div class="panel" id="panel"></div>
+<div class="panel" id="panel">
+  <div class="topbar">
+    <div>
+      <h1>Materias cargadas</h1>
+      <div id="count" class="small">Cargando...</div>
+    </div>
+    <button class="secondary" onclick="cargar()">Recargar</button>
+  </div>
+
+  <div id="statusBox" class="loading">Esperando datos...</div>
+
+  <div class="search">
+    <input id="searchInput" placeholder="Buscar por materia, comisión, día, horario o aula..." oninput="render()">
+    <button onclick="cargar()">Actualizar</button>
+  </div>
+
+  <div class="cards" id="cards"></div>
+</div>
 
 <script>
-
 const API_URL = "https://script.google.com/macros/s/AKfycbxDRCtfHNT_PB3SK299zLCfSdQNwQkm7XddSl7Mt4YALjECIrJMzCdGiFnS151ql7ah/exec";
 
+let materias = [];
+
+function setBox(type, text){
+  const box = document.getElementById("statusBox");
+  box.className = type || "loading";
+  box.textContent = text;
+}
+
 function login(){
-  if(document.getElementById("user").value==="admin" &&
-     document.getElementById("pass").value==="1234"){
-    document.getElementById("login").style.display="none";
-    document.getElementById("panel").style.display="block";
+  const u = document.getElementById("user").value.trim();
+  const p = document.getElementById("pass").value.trim();
+  const msg = document.getElementById("loginMsg");
+
+  if(u === "admin" && p === "1234"){
+    document.getElementById("login").style.display = "none";
+    document.getElementById("panel").style.display = "block";
     cargar();
+  } else {
+    msg.className = "error";
+    msg.textContent = "Usuario o contraseña incorrectos. Probá admin / 1234.";
   }
 }
 
 async function cargar(){
-  const res = await fetch(API_URL);
-  const data = await res.json();
-  const panel = document.getElementById("panel");
-  panel.innerHTML="";
+  setBox("loading", "Cargando materias desde Apps Script...");
+  document.getElementById("cards").innerHTML = "";
 
-  data.forEach(m=>{
-    panel.innerHTML+=`
-      <div class="card">
-        <b>${m.materia}</b><br>
-        Comisión: ${m.comision}<br>
-        Día: ${m.dia}<br>
-        Horario: ${m.horario_inicio} - ${m.horario_fin}<br>
-        <input placeholder="Nueva aula" id="aula_${m.id}">
-        <button onclick="cambiarAula('${m.id}')">Cambiar aula</button>
-        <button onclick="suspender('${m.id}')">Suspender</button>
+  try{
+    const url = API_URL + (API_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
+    const res = await fetch(url, { method:"GET", cache:"no-store" });
+    const text = await res.text();
+
+    if(!res.ok){
+      throw new Error("Apps Script respondió HTTP " + res.status + "\\n\\n" + text.slice(0,500));
+    }
+
+    let data;
+    try{
+      data = JSON.parse(text);
+    }catch(e){
+      throw new Error("La respuesta NO es JSON válido. Respuesta recibida:\\n\\n" + text.slice(0,800));
+    }
+
+    if(data && data.ok === false){
+      throw new Error("Apps Script devolvió error:\\n" + (data.error || JSON.stringify(data)));
+    }
+
+    if(!Array.isArray(data)){
+      throw new Error("El panel esperaba una lista de materias, pero recibió esto:\\n\\n" + JSON.stringify(data, null, 2).slice(0,1000));
+    }
+
+    materias = data;
+    setBox("success", "Conectado. Se cargaron " + materias.length + " materias.");
+    render();
+
+  }catch(err){
+    materias = [];
+    document.getElementById("count").textContent = "0 materias";
+    document.getElementById("cards").innerHTML = "";
+    setBox("error", "No se pudieron cargar las materias.\\n\\n" + err.message + "\\n\\nRevisá que Apps Script esté implementado como Web App y que la hoja se llame Materias.");
+  }
+}
+
+function render(){
+  const q = (document.getElementById("searchInput").value || "").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
+  const list = materias.filter(m => {
+    const txt = [
+      m.materia, m.comision, m.dia, m.horario_inicio, m.horario_fin,
+      m.aula, m.edificio, m.facultad, m.estado, m.mensaje
+    ].join(" ").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
+    return txt.includes(q);
+  });
+
+  document.getElementById("count").textContent = list.length + " materias visibles de " + materias.length + " cargadas";
+
+  document.getElementById("cards").innerHTML = list.map(m => `
+    <div class="card">
+      <h3>${esc(m.materia || "Sin materia")}</h3>
+      <span class="status ${esc(m.estado || "normal")}">${esc(m.estado || "normal")}</span>
+      <div class="meta">
+        <b>Comisión:</b> ${esc(m.comision || "-")}<br>
+        <b>Día:</b> ${esc(m.dia || "-")}<br>
+        <b>Horario:</b> ${esc(m.horario_inicio || "-")} - ${esc(m.horario_fin || "-")}<br>
+        <b>Aula:</b> ${esc(m.aula || "-")} ${m.edificio ? "· " + esc(m.edificio) : ""}<br>
+        <b>Facultad:</b> ${esc(m.facultad || "-")}
       </div>
-    `;
-  });
+
+      <input placeholder="Nueva aula" id="aula_${escAttr(m.id)}">
+
+      <div class="actions">
+        <button onclick="cambiarAula('${escAttr(m.id)}')">Cambiar aula</button>
+        <button class="danger" onclick="suspender('${escAttr(m.id)}')">Suspender</button>
+        <button class="ok" onclick="normalizar('${escAttr(m.id)}')">Normalizar</button>
+      </div>
+
+      ${m.mensaje ? `<div class="msg">${esc(m.mensaje)}</div>` : ""}
+    </div>
+  `).join("");
 }
 
-async function cambiarAula(id){
-  const aula=document.getElementById("aula_"+id).value;
-  await fetch(API_URL,{
-    method:"POST",
-    body:JSON.stringify({accion:"cambio_aula",id,aula})
-  });
-  cargar();
+async function postAction(payload){
+  try{
+    setBox("loading", "Guardando cambio...");
+    const res = await fetch(API_URL, {
+      method:"POST",
+      body: JSON.stringify(payload)
+    });
+    const text = await res.text();
+
+    let data;
+    try{ data = JSON.parse(text); }
+    catch(e){ throw new Error("Respuesta no JSON:\\n" + text.slice(0,800)); }
+
+    if(!data.ok){
+      throw new Error(data.error || JSON.stringify(data));
+    }
+
+    setBox("success", data.message || "Cambio guardado.");
+    await cargar();
+
+  }catch(err){
+    setBox("error", "No se pudo guardar el cambio:\\n\\n" + err.message);
+  }
 }
 
-async function suspender(id){
-  await fetch(API_URL,{
-    method:"POST",
-    body:JSON.stringify({accion:"suspension",id})
-  });
-  cargar();
+function cambiarAula(id){
+  const aula = document.getElementById("aula_" + CSS.escape(id)).value.trim();
+  if(!aula){
+    setBox("error", "Escribí el aula nueva antes de guardar.");
+    return;
+  }
+  postAction({ accion:"cambio_aula", id, aula });
 }
 
+function suspender(id){
+  postAction({ accion:"suspension", id });
+}
+
+function normalizar(id){
+  postAction({ accion:"normalizar", id });
+}
+
+function esc(v){
+  return String(v ?? "").replace(/[&<>"']/g, s => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;","'":"&#039;"
+  }[s]));
+}
+
+function escAttr(v){
+  return String(v ?? "").replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/"/g,"&quot;");
+}
 </script>
-
 </body>
 </html>
