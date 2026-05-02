@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel administrativo · Pantalla UCA</title>
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --bg:#071f3d;
+    --bg2:#0d2f5f;
+    --card:#f6f7fb;
+    --text:#111827;
+    --muted:#64748b;
+    --line:#e5e7eb;
+    --uca:#0d2f5f;
+    --danger:#dc2626;
+    --ok:#10b981;
+  }
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:Arial, Helvetica, sans-serif;
+    background:linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);
+    color:white;
+  }
+  .wrap{
+    width:min(1180px, calc(100% - 28px));
+    margin:0 auto;
+    padding:24px 0 40px;
+  }
+  .topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:16px;
+    margin-bottom:18px;
+  }
+  h1{
+    margin:0;
+    font-size:clamp(26px, 3vw, 42px);
+    line-height:1.05;
+  }
+  .sub{
+    margin-top:7px;
+    color:#d7e2f0;
+    font-size:15px;
+  }
+  .back{
+    color:white;
+    text-decoration:none;
+    border:1px solid rgba(255,255,255,.22);
+    background:rgba(255,255,255,.10);
+    padding:10px 14px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:800;
+  }
+  .box{
+    background:var(--card);
+    color:var(--text);
+    border-radius:24px;
+    padding:20px;
+    box-shadow:0 18px 46px rgba(0,0,0,.24);
+  }
+  .login{
+    width:min(460px,100%);
+    margin:50px auto 0;
+  }
+  label{
+    display:block;
+    font-weight:800;
+    margin:14px 0 7px;
+    font-size:13px;
+  }
+  input, select, textarea{
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:12px 13px;
+    font-size:14px;
+    outline:none;
+    background:white;
+    color:#111827;
+  }
+  textarea{
+    min-height:76px;
+    resize:vertical;
+  }
+  input:focus, select:focus, textarea:focus{
+    border-color:#2563eb;
+    box-shadow:0 0 0 3px rgba(37,99,235,.15);
+  }
+  .btn{
+    border:none;
+    border-radius:14px;
+    padding:11px 14px;
+    font-weight:900;
+    cursor:pointer;
+    background:#2563eb;
+    color:white;
+    transition:.15s ease;
+  }
+  .btn:hover{filter:brightness(1.05); transform:translateY(-1px);}
+  .btn.secondary{background:#334155;}
+  .btn.success{background:var(--ok);}
+  .btn.danger{background:var(--danger);}
+  .btn.ghost{
+    background:white;
+    color:#111827;
+    border:1px solid var(--line);
+  }
+  .btn-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:16px;
+  }
+  .msg{
+    margin-top:12px;
+    font-size:13px;
+    font-weight:800;
+  }
+  .msg.error{color:#b91c1c}
+  .msg.ok{color:#047857}
+  .panel{
+    display:none;
+  }
+  .toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .toolbar-left{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .toolbar input,.toolbar select{
+    width:auto;
+    min-width:210px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
+  }
+  .materia{
+    background:white;
+    color:#111827;
+    border-radius:20px;
+    padding:16px;
+    border:1px solid var(--line);
+  }
+  .materia-head{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .materia h3{
+    margin:0;
+    font-size:18px;
+    line-height:1.15;
+  }
+  .tag{
+    flex:0 0 auto;
+    height:fit-content;
+    border-radius:999px;
+    padding:6px 9px;
+    font-size:11px;
+    font-weight:900;
+    background:#e5e7eb;
+  }
+  .tag.normal{background:#d1fae5;color:#065f46;}
+  .tag.suspendida,.tag.cambio,.tag.cambio_aula,.tag.cambio_horario{background:#fee2e2;color:#991b1b;}
+  .mini{
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.5;
+    margin-bottom:12px;
+  }
+  .form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+  }
+  .full{grid-column:1/-1;}
+  .divider{
+    height:1px;
+    background:var(--line);
+    margin:14px 0;
+  }
+  .add-box{
+    margin-bottom:14px;
+    display:none;
+  }
+  .help{
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.45;
+    margin-top:8px;
+  }
+  @media(max-width:800px){
+    .topbar{flex-direction:column;}
+    .grid{grid-template-columns:1fr;}
+    .form-grid{grid-template-columns:1fr;}
+    .toolbar input,.toolbar select{width:100%;}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <h1>Panel administrativo</h1>
+        <div class="sub">Pantalla UCA · cambios de aula, horario, suspensión, alta y baja de materias</div>
+      </div>
+      <a class="back" href="index.html">Volver a pantalla</a>
+    </div>
+
+    <section id="loginBox" class="box login">
+      <h2 style="margin:0 0 4px">Ingresar</h2>
+      <div class="help">Este acceso valida contra Google Apps Script. No pongas claves importantes en el HTML.</div>
+
+      <label for="usuario">Usuario</label>
+      <input id="usuario" autocomplete="username" >
+
+      <label for="codigo">Código de acceso</label>
+      <input id="codigo" type="password" autocomplete="current-password" >
+
+      <div class="btn-row">
+        <button class="btn" onclick="login()">Ingresar</button>
+      </div>
+      <div id="loginMsg" class="msg"></div>
+    </section>
+
+    <section id="panel" class="panel">
+      <div class="box add-box" id="addBox">
+        <h2 style="margin-top:0">Agregar materia</h2>
+        <div class="form-grid">
+          <div><label>ID</label><input id="add_id" placeholder="Ej: ECO-LUN-001"></div>
+          <div><label>Día</label><select id="add_dia"><option>Lunes</option><option>Martes</option><option>Miércoles</option><option>Jueves</option><option>Viernes</option><option>Sábado</option></select></div>
+          <div><label>Facultad</label><select id="add_facultad"><option>Económicas</option><option>Derecho y Cs Sociales</option><option>Salud</option><option>Química e Ingeniería</option></select></div>
+          <div><label>Materia</label><input id="add_materia" placeholder="Nombre de la materia"></div>
+          <div><label>Comisión</label><input id="add_comision" placeholder="Ej: A / Comisión 1"></div>
+          <div><label>Aula</label><input id="add_aula" placeholder="Ej: 205"></div>
+          <div><label>Edificio</label><input id="add_edificio" placeholder="Ej: San José"></div>
+          <div><label>Inicio</label><input id="add_inicio" placeholder="Ej: 07:30"></div>
+          <div><label>Fin</label><input id="add_fin" placeholder="Ej: 09:30"></div>
+          <div><label>Estado</label><select id="add_estado"><option value="normal">normal</option><option value="suspendida">suspendida</option><option value="cambio_aula">cambio_aula</option><option value="cambio_horario">cambio_horario</option></select></div>
+          <div><label>Visible</label><select id="add_visible"><option value="SI">SI</option><option value="NO">NO</option></select></div>
+          <div class="full"><label>Mensaje</label><textarea id="add_mensaje" placeholder="Ej: Clase suspendida por única vez / Aula modificada solo por hoy"></textarea></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn success" onclick="agregarMateria()">Agregar</button>
+          <button class="btn ghost" onclick="toggleAdd(false)">Cancelar</button>
+        </div>
+        <div id="addMsg" class="msg"></div>
+      </div>
+
+      <div class="box">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <button class="btn success" onclick="toggleAdd(true)">+ Nueva materia</button>
+            <button class="btn secondary" onclick="cargarMaterias()">Actualizar listado</button>
+            <select id="filtroDia" onchange="renderMaterias()">
+              <option value="todos">Todos los días</option>
+              <option value="lunes">Lunes</option>
+              <option value="martes">Martes</option>
+              <option value="miercoles">Miércoles</option>
+              <option value="jueves">Jueves</option>
+              <option value="viernes">Viernes</option>
+              <option value="sabado">Sábado</option>
+            </select>
+            <select id="filtroFacultad" onchange="renderMaterias()">
+              <option value="todas">Todas las facultades</option>
+              <option value="economicas">Económicas</option>
+              <option value="derecho">Derecho y Cs Sociales</option>
+              <option value="salud">Salud</option>
+              <option value="quimica">Química e Ingeniería</option>
+            </select>
+            <input id="busqueda" placeholder="Buscar materia, aula o comisión" oninput="renderMaterias()">
+          </div>
+          <button class="btn danger" onclick="logout()">Salir</button>
+        </div>
+
+        <div id="panelMsg" class="msg"></div>
+        <div class="divider"></div>
+        <div id="materiasGrid" class="grid"></div>
+      </div>
+    </section>
+  </div>
+
+<script>
+  /*
+    Después de publicar Google Apps Script como aplicación web,
+    pegá acá la URL que termina en /exec.
+  */
+  const API_URL = "https://script.google.com/macros/s/AKfycbxA1y4m3Yiy0q-WEjN8iVj13p82hJtZY0S5qcLEnVSiXH4a8tlVCbX46mT1tchji5hi/exec";
+
+  let token = localStorage.getItem("uca_admin_token") || "";
+  let materias = [];
+
+  const loginBox = document.getElementById("loginBox");
+  const panel = document.getElementById("panel");
+  const materiasGrid = document.getElementById("materiasGrid");
+
+  function jsonp(params){
+    return new Promise((resolve, reject) => {
+      if(!API_URL || API_URL.includes("PEGAR_ACA")){
+        reject(new Error("Falta pegar la URL de Apps Script en admin.html"));
+        return;
+      }
+
+      const callbackName = "ucaAdminCallback_" + Date.now() + "_" + Math.floor(Math.random()*100000);
+      const url = new URL(API_URL);
+      Object.entries(params).forEach(([key,value]) => url.searchParams.set(key, value ?? ""));
+      url.searchParams.set("callback", callbackName);
+      url.searchParams.set("_t", Date.now());
+
+      const script = document.createElement("script");
+      const timer = setTimeout(() => {
+        cleanup();
+        reject(new Error("Tiempo de espera agotado"));
+      }, 12000);
+
+      function cleanup(){
+        clearTimeout(timer);
+        delete window[callbackName];
+        script.remove();
+      }
+
+      window[callbackName] = (data) => {
+        cleanup();
+        resolve(data);
+      };
+
+      script.onerror = () => {
+        cleanup();
+        reject(new Error("No se pudo conectar con Apps Script"));
+      };
+
+      script.src = url.toString();
+      document.body.appendChild(script);
+    });
+  }
+
+  function normalizeText(value){
+    return (value || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function facultyKey(value){
+    const v = normalizeText(value);
+    if(v.includes("econom")) return "economicas";
+    if(v.includes("derecho")) return "derecho";
+    if(v.includes("salud")) return "salud";
+    if(v.includes("quim")) return "quimica";
+    return v;
+  }
+
+  function setMsg(id, text, type=""){
+    const el = document.getElementById(id);
+    el.textContent = text || "";
+    el.className = "msg " + type;
+  }
+
+  function showPanel(){
+    loginBox.style.display = "none";
+    panel.style.display = "block";
+  }
+
+  function showLogin(){
+    loginBox.style.display = "block";
+    panel.style.display = "none";
+  }
+
+  async function login(){
+    setMsg("loginMsg", "Validando...", "");
+    try{
+      const usuario = document.getElementById("usuario").value.trim();
+      const codigo = document.getElementById("codigo").value.trim();
+      const res = await jsonp({accion:"login", usuario, codigo});
+
+      if(!res.ok) throw new Error(res.error || "Usuario o código incorrecto");
+
+      token = res.token;
+      localStorage.setItem("uca_admin_token", token);
+      setMsg("loginMsg", "Acceso correcto", "ok");
+      showPanel();
+      await cargarMaterias();
+    }catch(err){
+      setMsg("loginMsg", err.message, "error");
+    }
+  }
+
+  function logout(){
+    token = "";
+    localStorage.removeItem("uca_admin_token");
+    showLogin();
+  }
+
+  async function cargarMaterias(){
+    setMsg("panelMsg", "Cargando materias...", "");
+    try{
+      const res = await jsonp({accion:"listar", token});
+      if(!res.ok) throw new Error(res.error || "No se pudo listar");
+      materias = res.rows || [];
+      setMsg("panelMsg", `${materias.length} materias cargadas`, "ok");
+      renderMaterias();
+    }catch(err){
+      setMsg("panelMsg", err.message, "error");
+      if(String(err.message).toLowerCase().includes("sesion")){
+        logout();
+      }
+    }
+  }
+
+  function renderMaterias(){
+    const dia = document.getElementById("filtroDia").value;
+    const fac = document.getElementById("filtroFacultad").value;
+    const q = normalizeText(document.getElementById("busqueda").value);
+
+    const filtradas = materias.filter(m => {
+      const diaOk = dia === "todos" || normalizeText(m.dia) === dia;
+      const facOk = fac === "todas" || facultyKey(m.facultad) === fac;
+      const text = normalizeText(`${m.materia} ${m.aula} ${m.comision} ${m.id}`);
+      const qOk = !q || text.includes(q);
+      return diaOk && facOk && qOk;
+    });
+
+    if(!filtradas.length){
+      materiasGrid.innerHTML = `<div class="materia full"><h3>No hay materias con esos filtros</h3><div class="mini">Probá cambiar día, facultad o búsqueda.</div></div>`;
+      return;
+    }
+
+    materiasGrid.innerHTML = filtradas.map(m => materiaCard(m)).join("");
+  }
+
+  function materiaCard(m){
+    const safeId = String(m.id).replace(/"/g, "&quot;");
+    const estado = m.estado || "normal";
+    return `
+      <article class="materia">
+        <div class="materia-head">
+          <div>
+            <h3>${m.materia || "Sin nombre"}</h3>
+            <div class="mini">ID: ${m.id} · ${m.dia} · ${m.facultad}</div>
+          </div>
+          <span class="tag ${estado}">${estado}</span>
+        </div>
+
+        <div class="form-grid">
+          <div><label>Aula</label><input id="aula_${safeId}" value="${escapeHtml(m.aula || "")}"></div>
+          <div><label>Edificio</label><input id="edificio_${safeId}" value="${escapeHtml(m.edificio || "")}"></div>
+          <div><label>Inicio</label><input id="inicio_${safeId}" value="${escapeHtml(m.horario_inicio || "")}"></div>
+          <div><label>Fin</label><input id="fin_${safeId}" value="${escapeHtml(m.horario_fin || "")}"></div>
+          <div><label>Estado</label>
+            <select id="estado_${safeId}">
+              ${option("normal", estado)}
+              ${option("suspendida", estado)}
+              ${option("cambio_aula", estado)}
+              ${option("cambio_horario", estado)}
+            </select>
+          </div>
+          <div><label>Visible</label>
+            <select id="visible_${safeId}">
+              ${option("SI", m.visible)}
+              ${option("NO", m.visible)}
+            </select>
+          </div>
+          <div class="full"><label>Mensaje</label><textarea id="mensaje_${safeId}">${escapeHtml(m.mensaje || "")}</textarea></div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn" onclick="guardar('${safeId}')">Guardar cambios</button>
+          <button class="btn ghost" onclick="resetNormal('${safeId}')">Volver a normal</button>
+          <button class="btn danger" onclick="eliminar('${safeId}')">Eliminar</button>
+        </div>
+      </article>
+    `;
+  }
+
+  function option(value, current){
+    const selected = String(value).toLowerCase() === String(current || "").toLowerCase() ? "selected" : "";
+    return `<option value="${value}" ${selected}>${value}</option>`;
+  }
+
+  function escapeHtml(str){
+    return String(str)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  async function guardar(id){
+    setMsg("panelMsg", "Guardando cambios...", "");
+    try{
+      const payload = {
+        accion:"actualizar",
+        token,
+        id,
+        aula: document.getElementById(`aula_${id}`).value,
+        edificio: document.getElementById(`edificio_${id}`).value,
+        horario_inicio: document.getElementById(`inicio_${id}`).value,
+        horario_fin: document.getElementById(`fin_${id}`).value,
+        estado: document.getElementById(`estado_${id}`).value,
+        mensaje: document.getElementById(`mensaje_${id}`).value,
+        visible: document.getElementById(`visible_${id}`).value
+      };
+      const res = await jsonp(payload);
+      if(!res.ok) throw new Error(res.error || "No se pudo guardar");
+      setMsg("panelMsg", "Cambios guardados", "ok");
+      await cargarMaterias();
+    }catch(err){
+      setMsg("panelMsg", err.message, "error");
+    }
+  }
+
+  async function resetNormal(id){
+    document.getElementById(`estado_${id}`).value = "normal";
+    document.getElementById(`mensaje_${id}`).value = "";
+    await guardar(id);
+  }
+
+  async function eliminar(id){
+    if(!confirm("¿Seguro que querés eliminar esta materia de la planilla?")) return;
+    setMsg("panelMsg", "Eliminando...", "");
+    try{
+      const res = await jsonp({accion:"eliminar", token, id});
+      if(!res.ok) throw new Error(res.error || "No se pudo eliminar");
+      setMsg("panelMsg", "Materia eliminada", "ok");
+      await cargarMaterias();
+    }catch(err){
+      setMsg("panelMsg", err.message, "error");
+    }
+  }
+
+  function toggleAdd(show){
+    document.getElementById("addBox").style.display = show ? "block" : "none";
+  }
+
+  async function agregarMateria(){
+    setMsg("addMsg", "Agregando materia...", "");
+    try{
+      const payload = {
+        accion:"agregar",
+        token,
+        id: document.getElementById("add_id").value.trim(),
+        dia: document.getElementById("add_dia").value,
+        facultad: document.getElementById("add_facultad").value,
+        materia: document.getElementById("add_materia").value.trim(),
+        comision: document.getElementById("add_comision").value.trim(),
+        horario_inicio: document.getElementById("add_inicio").value.trim(),
+        horario_fin: document.getElementById("add_fin").value.trim(),
+        aula: document.getElementById("add_aula").value.trim(),
+        edificio: document.getElementById("add_edificio").value.trim(),
+        estado: document.getElementById("add_estado").value,
+        mensaje: document.getElementById("add_mensaje").value.trim(),
+        visible: document.getElementById("add_visible").value
+      };
+
+      const res = await jsonp(payload);
+      if(!res.ok) throw new Error(res.error || "No se pudo agregar");
+
+      setMsg("addMsg", "Materia agregada", "ok");
+      document.querySelectorAll("#addBox input, #addBox textarea").forEach(el => el.value = "");
+      await cargarMaterias();
+    }catch(err){
+      setMsg("addMsg", err.message, "error");
+    }
+  }
+
+  if(token){
+    showPanel();
+    cargarMaterias();
+  }else{
+    showLogin();
+  }
+</script>
+</body>
+</html>
