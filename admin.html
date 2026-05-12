@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel administrativo · Pantalla UCA</title>
+<title>Panel administrativo · Aula+</title>
 <style>
   *{box-sizing:border-box}
   :root{
@@ -143,6 +143,26 @@
     width:auto;
     min-width:210px;
   }
+  .stats{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin:10px 0 0;
+  }
+  .stat{
+    background:rgba(13,47,95,.08);
+    border:1px solid rgba(13,47,95,.12);
+    color:#0f172a;
+    border-radius:999px;
+    padding:7px 10px;
+    font-size:12px;
+    font-weight:900;
+  }
+  .small-note{
+    margin-top:6px;
+    color:var(--muted);
+    font-size:12px;
+  }
   .grid{
     display:grid;
     grid-template-columns:repeat(2,minmax(0,1fr));
@@ -217,20 +237,18 @@
     <div class="topbar">
       <div>
         <h1>Panel administrativo</h1>
-        <div class="sub">Pantalla UCA · cambios de aula, horario, suspensión, alta y baja de materias</div>
+        <div class="sub">Aula+ · cambios de aula, horario, suspensión, alta y baja de materias</div>
       </div>
       <a class="back" href="index.html">Volver a pantalla</a>
     </div>
 
     <section id="loginBox" class="box login">
       <h2 style="margin:0 0 4px">Ingresar</h2>
-      <div class="help">Este acceso valida contra Google Apps Script. No pongas claves importantes en el HTML.</div>
-
       <label for="usuario">Usuario</label>
-      <input id="usuario" autocomplete="username" >
+      <input id="usuario" autocomplete="username" placeholder="Ingresá tu usuario">
 
       <label for="codigo">Código de acceso</label>
-      <input id="codigo" type="password" autocomplete="current-password" >
+      <input id="codigo" type="password" autocomplete="current-password" placeholder="Ingresá tu código">
 
       <div class="btn-row">
         <button class="btn" onclick="login()">Ingresar</button>
@@ -289,6 +307,7 @@
         </div>
 
         <div id="panelMsg" class="msg"></div>
+        <div id="panelStats" class="stats"></div>
         <div class="divider"></div>
         <div id="materiasGrid" class="grid"></div>
       </div>
@@ -304,10 +323,12 @@
 
   let token = localStorage.getItem("uca_admin_token") || "";
   let materias = [];
+  let materiaKeyMap = {};
 
   const loginBox = document.getElementById("loginBox");
   const panel = document.getElementById("panel");
   const materiasGrid = document.getElementById("materiasGrid");
+  const panelStats = document.getElementById("panelStats");
 
   function jsonp(params){
     return new Promise((resolve, reject) => {
@@ -351,6 +372,13 @@
 
   function normalizeText(value){
     return (value || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function toDomKey(value){
+    return btoa(unescape(encodeURIComponent(String(value || "sin_id"))))
+      .replaceAll("=", "")
+      .replaceAll("+", "_")
+      .replaceAll("/", "-");
   }
 
   function facultyKey(value){
@@ -427,39 +455,47 @@
     const filtradas = materias.filter(m => {
       const diaOk = dia === "todos" || normalizeText(m.dia) === dia;
       const facOk = fac === "todas" || facultyKey(m.facultad) === fac;
-      const text = normalizeText(`${m.materia} ${m.aula} ${m.comision} ${m.id}`);
+      const text = normalizeText(`${m.materia} ${m.aula} ${m.edificio} ${m.comision} ${m.id} ${m.mensaje}`);
       const qOk = !q || text.includes(q);
       return diaOk && facOk && qOk;
     });
+
+    actualizarStats(filtradas);
 
     if(!filtradas.length){
       materiasGrid.innerHTML = `<div class="materia full"><h3>No hay materias con esos filtros</h3><div class="mini">Probá cambiar día, facultad o búsqueda.</div></div>`;
       return;
     }
 
-    materiasGrid.innerHTML = filtradas.map(m => materiaCard(m)).join("");
+    materiaKeyMap = {};
+    materiasGrid.innerHTML = filtradas.map((m, index) => materiaCard(m, index)).join("");
   }
 
-  function materiaCard(m){
-    const safeId = String(m.id).replace(/"/g, "&quot;");
+  function materiaCard(m, index){
+    const originalId = String(m.id || "").trim();
+    const key = toDomKey(originalId || `fila_${index}`);
+    materiaKeyMap[key] = originalId;
     const estado = m.estado || "normal";
+    const materia = escapeHtml(m.materia || "Sin nombre");
+    const meta = escapeHtml(`ID: ${m.id || ""} · ${m.dia || ""} · ${m.facultad || ""}`);
+
     return `
       <article class="materia">
         <div class="materia-head">
           <div>
-            <h3>${m.materia || "Sin nombre"}</h3>
-            <div class="mini">ID: ${m.id} · ${m.dia} · ${m.facultad}</div>
+            <h3>${materia}</h3>
+            <div class="mini">${meta}</div>
           </div>
-          <span class="tag ${estado}">${estado}</span>
+          <span class="tag ${escapeHtml(estado)}">${escapeHtml(estadoLegible(estado))}</span>
         </div>
 
         <div class="form-grid">
-          <div><label>Aula</label><input id="aula_${safeId}" value="${escapeHtml(m.aula || "")}"></div>
-          <div><label>Edificio</label><input id="edificio_${safeId}" value="${escapeHtml(m.edificio || "")}"></div>
-          <div><label>Inicio</label><input id="inicio_${safeId}" value="${escapeHtml(m.horario_inicio || "")}"></div>
-          <div><label>Fin</label><input id="fin_${safeId}" value="${escapeHtml(m.horario_fin || "")}"></div>
+          <div><label>Aula</label><input id="aula_${key}" value="${escapeHtml(m.aula || "")}"></div>
+          <div><label>Edificio</label><input id="edificio_${key}" value="${escapeHtml(m.edificio || "")}"></div>
+          <div><label>Inicio</label><input id="inicio_${key}" value="${escapeHtml(m.horario_inicio || "")}"></div>
+          <div><label>Fin</label><input id="fin_${key}" value="${escapeHtml(m.horario_fin || "")}"></div>
           <div><label>Estado</label>
-            <select id="estado_${safeId}">
+            <select id="estado_${key}">
               ${option("normal", estado)}
               ${option("suspendida", estado)}
               ${option("cambio_aula", estado)}
@@ -467,18 +503,18 @@
             </select>
           </div>
           <div><label>Visible</label>
-            <select id="visible_${safeId}">
-              ${option("SI", m.visible)}
-              ${option("NO", m.visible)}
+            <select id="visible_${key}">
+              ${option("SI", normalizeVisible(m.visible))}
+              ${option("NO", normalizeVisible(m.visible))}
             </select>
           </div>
-          <div class="full"><label>Mensaje</label><textarea id="mensaje_${safeId}">${escapeHtml(m.mensaje || "")}</textarea></div>
+          <div class="full"><label>Mensaje</label><textarea id="mensaje_${key}">${escapeHtml(m.mensaje || "")}</textarea></div>
         </div>
 
         <div class="btn-row">
-          <button class="btn" onclick="guardar('${safeId}')">Guardar cambios</button>
-          <button class="btn ghost" onclick="resetNormal('${safeId}')">Volver a normal</button>
-          <button class="btn danger" onclick="eliminar('${safeId}')">Eliminar</button>
+          <button class="btn" onclick="guardar('${key}')">Guardar cambios</button>
+          <button class="btn ghost" onclick="resetNormal('${key}')">Volver a normal</button>
+          <button class="btn danger" onclick="eliminar('${key}')">Eliminar</button>
         </div>
       </article>
     `;
@@ -487,6 +523,32 @@
   function option(value, current){
     const selected = String(value).toLowerCase() === String(current || "").toLowerCase() ? "selected" : "";
     return `<option value="${value}" ${selected}>${value}</option>`;
+  }
+
+  function normalizeVisible(value){
+    const v = String(value ?? "").trim().toLowerCase();
+    if(value === true || v === "si" || v === "sí" || v === "true" || v === "1") return "SI";
+    if(value === false || v === "no" || v === "false" || v === "0") return "NO";
+    return "SI";
+  }
+
+  function estadoLegible(value){
+    const v = String(value || "normal").toLowerCase();
+    if(v === "cambio_aula") return "Cambio de aula";
+    if(v === "cambio_horario") return "Cambio de horario";
+    if(v === "suspendida") return "Suspendida";
+    return "Normal";
+  }
+
+  function actualizarStats(rows){
+    const total = rows.length;
+    const visibles = rows.filter(m => normalizeVisible(m.visible) === "SI").length;
+    const cambios = rows.filter(m => ["suspendida", "cambio", "cambio_aula", "cambio_horario"].includes(String(m.estado || "").toLowerCase())).length;
+    panelStats.innerHTML = `
+      <span class="stat">${total} materias filtradas</span>
+      <span class="stat">${visibles} visibles</span>
+      <span class="stat">${cambios} con cambios/suspensión</span>
+    `;
   }
 
   function escapeHtml(str){
@@ -498,20 +560,22 @@
       .replaceAll("'","&#039;");
   }
 
-  async function guardar(id){
+  async function guardar(key){
     setMsg("panelMsg", "Guardando cambios...", "");
     try{
+      const id = materiaKeyMap[key] || key;
+      if(!id || id.startsWith("fila_")) throw new Error("Esta materia no tiene ID válido. Agregá un ID en la planilla para poder editarla.");
       const payload = {
         accion:"actualizar",
         token,
         id,
-        aula: document.getElementById(`aula_${id}`).value,
-        edificio: document.getElementById(`edificio_${id}`).value,
-        horario_inicio: document.getElementById(`inicio_${id}`).value,
-        horario_fin: document.getElementById(`fin_${id}`).value,
-        estado: document.getElementById(`estado_${id}`).value,
-        mensaje: document.getElementById(`mensaje_${id}`).value,
-        visible: document.getElementById(`visible_${id}`).value
+        aula: document.getElementById(`aula_${key}`).value,
+        edificio: document.getElementById(`edificio_${key}`).value,
+        horario_inicio: document.getElementById(`inicio_${key}`).value,
+        horario_fin: document.getElementById(`fin_${key}`).value,
+        estado: document.getElementById(`estado_${key}`).value,
+        mensaje: document.getElementById(`mensaje_${key}`).value,
+        visible: document.getElementById(`visible_${key}`).value
       };
       const res = await jsonp(payload);
       if(!res.ok) throw new Error(res.error || "No se pudo guardar");
@@ -522,16 +586,18 @@
     }
   }
 
-  async function resetNormal(id){
-    document.getElementById(`estado_${id}`).value = "normal";
-    document.getElementById(`mensaje_${id}`).value = "";
-    await guardar(id);
+  async function resetNormal(key){
+    document.getElementById(`estado_${key}`).value = "normal";
+    document.getElementById(`mensaje_${key}`).value = "";
+    await guardar(key);
   }
 
-  async function eliminar(id){
+  async function eliminar(key){
     if(!confirm("¿Seguro que querés eliminar esta materia de la planilla?")) return;
     setMsg("panelMsg", "Eliminando...", "");
     try{
+      const id = materiaKeyMap[key] || key;
+      if(!id || id.startsWith("fila_")) throw new Error("Esta materia no tiene ID válido. Agregá un ID en la planilla para poder eliminarla.");
       const res = await jsonp({accion:"eliminar", token, id});
       if(!res.ok) throw new Error(res.error || "No se pudo eliminar");
       setMsg("panelMsg", "Materia eliminada", "ok");
@@ -548,13 +614,18 @@
   async function agregarMateria(){
     setMsg("addMsg", "Agregando materia...", "");
     try{
+      const nuevoId = document.getElementById("add_id").value.trim();
+      const nuevaMateria = document.getElementById("add_materia").value.trim();
+      if(!nuevoId) throw new Error("Falta completar el ID de la materia");
+      if(!nuevaMateria) throw new Error("Falta completar el nombre de la materia");
+
       const payload = {
         accion:"agregar",
         token,
-        id: document.getElementById("add_id").value.trim(),
+        id: nuevoId,
         dia: document.getElementById("add_dia").value,
         facultad: document.getElementById("add_facultad").value,
-        materia: document.getElementById("add_materia").value.trim(),
+        materia: nuevaMateria,
         comision: document.getElementById("add_comision").value.trim(),
         horario_inicio: document.getElementById("add_inicio").value.trim(),
         horario_fin: document.getElementById("add_fin").value.trim(),
@@ -570,11 +641,20 @@
 
       setMsg("addMsg", "Materia agregada", "ok");
       document.querySelectorAll("#addBox input, #addBox textarea").forEach(el => el.value = "");
+      document.getElementById("add_estado").value = "normal";
+      document.getElementById("add_visible").value = "SI";
       await cargarMaterias();
     }catch(err){
       setMsg("addMsg", err.message, "error");
     }
   }
+
+  document.getElementById("codigo").addEventListener("keydown", (event) => {
+    if(event.key === "Enter") login();
+  });
+  document.getElementById("usuario").addEventListener("keydown", (event) => {
+    if(event.key === "Enter") document.getElementById("codigo").focus();
+  });
 
   if(token){
     showPanel();
